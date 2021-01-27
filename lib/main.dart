@@ -10,6 +10,9 @@ import 'package:google_signin_example/theme.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
+import 'network/wp_api.dart';
+import 'widget/post_list_item.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -22,21 +25,27 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  // ignore: cancel_subscriptions
   StreamSubscription _intentDataStreamSubscription;
-  List<SharedMediaFile> _sharedFiles;
-  String _sharedText;
+  StreamController<String> _intentStreamController;
   @override
   void initState() {
     // TODO: implement initState
+    _intentStreamController = StreamController();
     super.initState();
     _intentDataStreamSubscription =
         ReceiveSharingIntent.getTextStream().listen((String value) {
-      setState(() {
-        _sharedText = value;
-      });
+      //Stream just for performant
+      _intentStreamController.add(value);
     }, onError: (err) {
       print("getLinkStream error: $err");
     });
+  }
+
+  @override
+  void dispose() {
+    _intentStreamController.close();
+    super.dispose();
   }
 
   @override
@@ -51,9 +60,43 @@ class _MyAppState extends State<MyApp> {
           themeMode: themeChanger.getTheme,
           darkTheme: Style.get(true),
           theme: Style.get(false),
-          home: CheckPage(),
+          home: StreamBuilder<String>(
+              initialData: '',
+              stream: _intentStreamController.stream,
+              builder: (context, snapshot) {
+                if ((snapshot.data != null && snapshot.data.isNotEmpty)) {
+                  return displayPost(snapshot.data);
+                } else {
+                  return CheckPage();
+                }
+              }),
         );
       }),
+    );
+  }
+  //I think all is fine stop the app and rerun it, ok, ping me when done on cool :) thank u so much you're welcome :)
+  //u there?ooooooooooooooooooo u there?
+
+  //PostDisplayer
+  Widget displayPost(postUrl) {
+    return FutureBuilder(
+      future: WpApi.getSinglePostDetails(postUrl),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
+          return PostListItem(snapshot.data);
+        } else if (snapshot.connectionState == ConnectionState.waiting ||
+            snapshot.connectionState == ConnectionState.active) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        return Center(
+          child: Text(
+            'Post Not found',
+            style: Theme.of(context).textTheme.subtitle1,
+          ),
+        );
+      },
     );
   }
 }

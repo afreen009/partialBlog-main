@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:google_signin_example/page/post_details.dart';
 import 'package:google_signin_example/page/sharing_post.dart';
+import 'package:google_signin_example/widget/helpers.dart';
+import 'package:google_signin_example/widget/post_card.dart';
 import 'package:share/share.dart';
 
 import '../model/post_entity.dart';
-import 'helpers.dart';
 
-class PostCard extends StatefulWidget {
+class SearchNavigate extends StatefulWidget {
   PostEntity post;
   bool isFeaturedList;
   static const List<String> choices = <String>[
     "share to...",
   ];
-  PostCard(this.post, {this.isFeaturedList = false});
+  SearchNavigate(this.post, {this.isFeaturedList = false});
 
   @override
-  _PostCardState createState() => _PostCardState();
+  _SearchNavigateState createState() => _SearchNavigateState();
 }
 
-class _PostCardState extends State<PostCard> {
+class _SearchNavigateState extends State<SearchNavigate> {
   SharingPost share;
 
   String _selectedChoices;

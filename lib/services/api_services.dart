@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:google_signin_example/model/channel_models.dart';
 import 'package:google_signin_example/model/video_model.dart';
 import 'package:http/http.dart' as http;
@@ -78,6 +79,20 @@ class APIService {
       return videos;
     } else {
       throw json.decode(response.body)['error']['message'];
+    }
+  }
+
+//can u see whats the error
+  //Fetch List of CHannels
+  Stream<List<Channel>> getListOfChannels(
+      {@required List<String> channelListID}) async* {
+    assert(channelListID != null);
+    List<Channel> _channelList = [];
+
+    for (var i = 0; i < channelListID.length; i++) {
+      Channel _channel = await this.fetchChannel(channelId: channelListID[i]);
+      _channelList.add(_channel);
+      yield _channelList;
     }
   }
 }

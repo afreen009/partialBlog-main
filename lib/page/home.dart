@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_signin_example/page/edit_profile.dart';
 import 'package:google_signin_example/page/home1.dart';
-import 'package:google_signin_example/page/video_internal_tab.dart';
+import 'package:google_signin_example/page/search.dart';
 import 'package:google_signin_example/tabs/videos_page1.dart';
 import 'package:provider/provider.dart';
 import '../services/theme_changer.dart';
@@ -99,6 +99,7 @@ class _HomePageState extends State<HomePage> {
         index: currentIndex,
         children: <Widget>[
           Articles(),
+          SearchPage(),
           HomeTab(),
           VideoPlayerApp(),
           SettingsUI()
@@ -121,6 +122,13 @@ class _HomePageState extends State<HomePage> {
               size: 18,
             ),
             label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.search,
+              size: 18,
+            ),
+            label: 'search',
           ),
           BottomNavigationBarItem(
             icon: Icon(

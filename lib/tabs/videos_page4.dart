@@ -21,6 +21,9 @@ class _VideoPlayerApp4State extends State<VideoPlayerApp4> {
     _initChannel();
   }
 
+//o i thought ill make different tabs for diffffernt video channel, but client wanyts in 1 page , I see then that is what you're planning to do to , split it in tabs right ?
+// we will do it like that now, but in home page we should show some videos from all channels, okay put me back in mine pls
+//hahaha ok
   _initChannel() async {
     Channel channel4 = await APIService.instance
         .fetchChannel(channelId: 'UC_o475bQjzx17732_6P5vdA');

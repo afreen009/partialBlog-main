@@ -10,8 +10,9 @@
 //   _VideoPlayerAppState createState() => _VideoPlayerAppState();
 // }
 
+// //this is that code right?
 // class _VideoPlayerAppState extends State<VideoPlayerApp> {
-//   Channel _channel;
+//   Channel _channel; //As we're just testing let let is for now
 //   bool _isLoading = false;
 //   Color primaryColor = Color(0xff18203d);
 //   Color secondaryColor = Color(0xff232c51);
@@ -19,17 +20,18 @@
 //   @override
 //   void initState() {
 //     super.initState();
-//     _initChannel();
+//     // _initChannel();
 //   }
+//   //
+// //done?
+//   // _initChannel() async {//O comment that code
+//   //   Channel channel = await APIService.instance
+//   //       .fetchChannel(channelId: 'UCgpDrKxkgzFYKPh1wOQuY8Q');
 
-//   _initChannel() async {
-//     Channel channel = await APIService.instance
-//         .fetchChannel(channelId: 'UCgpDrKxkgzFYKPh1wOQuY8Q');
-
-//     setState(() {
-//       _channel = channel;
-//     });
-//   }
+//   //   setState(() {
+//   //     _channel = channel;
+//   //   });
+//   // }
 
 // //Where is the playlist code I pushed ?I jusr want to code py and that code i dint push oI unders
 
@@ -129,7 +131,7 @@
 //                 CircleAvatar(
 //                   backgroundColor: Colors.white,
 //                   radius: 20.0,
-//                   backgroundImage: NetworkImage(_channel.profilePictureUrl),
+//                   backgroundImage: NetworkImage(video.thumbnailUrl),
 //                 ),
 //                 Expanded(child: Text('  ' + video.title)),
 //               ],
@@ -143,67 +145,119 @@
 //     );
 //   }
 
-//   _loadMoreVideos() async {
-//     _isLoading = true;
-//     List<Video> moreVideos = await APIService.instance
-//         .fetchVideosFromPlaylist(playlistId: _channel.uploadPlaylistId);
-//     List<Video> allVideos = _channel.videos..addAll(moreVideos);
-//     setState(() {
-//       _channel.videos = allVideos;
-//     });
-//     _isLoading = false;
-//   }
-
+//   // _loadMoreVideos() async {
+//   //   _isLoading = true;
+//   //   List<Video> moreVideos = await APIService.instance
+//   //       .fetchVideosFromPlaylist(playlistId: _channel.uploadPlaylistId);
+//   //   List<Video> allVideos = _channel.videos..addAll(moreVideos);
+//   //   setState(() {
+//   //     _channel.videos = allVideos;
+//   //   });
+//   //   _isLoading = false;
+//   // }
+//   //Re run and test it
+// //COmment
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
 //       body: (1 != 2)
-//           ?
-// //It alradey one
-//           Padding(
-//               padding: const EdgeInsets.only(top: 8.0),
-//               child: StreamBuilder<List<Channel>>(
-//                 stream: APIService.instance
-//                     .getListOfChannels(channelListID: CHANNEL_ID_LIST),
-//                 builder: (context, snapshot) {
-//                   print(snapshot.data);
-//                   if (snapshot.hasData) {
-//                     List<Video> _totalVideo = [];
-//                     snapshot.data.forEach((channel) {
-//                       channel.videos.forEach((video) => _totalVideo.add(video));
-//                     });
-//                     return ListView.builder(
-//                         itemCount: _totalVideo.length,
-//                         itemBuilder: (context, index) =>
-//                             _buildVideo(_totalVideo[index]));
-//                   } else if (snapshot.connectionState ==
-//                           ConnectionState.active ||
-//                       snapshot.connectionState == ConnectionState.waiting) {
-//                     return Center(
-//                       child: CircularProgressIndicator(),
-//                     );
-//                   }
-//                   //ALl is done I think , just the time do not allow me to do the load more thingf for nor, nut I'll do when I'll got time afternoon if I find you online ,
-// // Areyou there ?yea yea  so what is remaining, the remaining is to add loadMoreVideo feature, because the video must be load from different channel at the same time
-//                   //so if i run now what is the screen i see, what will it have all videos?yeah It will have all the video as you know
-//                   return Center(
-//                     child: Column(
-//                       mainAxisAlignment: MainAxisAlignment.center,
-//                       children: [
-//                         Text('Be sure your internet is fine and retry'),
-//                         FlatButton(
-//                           color: Colors.grey[400],
-//                           child: Text(
-//                             'Retry again',
+//           ? SingleChildScrollView(
+//               child: Column(
+//                 children: [
+//                   //Stil; the same problem let go to yours
+
+//                   Container(
+//                     child: StreamBuilder<List<Channel>>(
+//                       stream: APIService.instance.getListOfChannels(
+//                           channelListID: CHANNEL_ID_LIST_PART_1),
+//                       builder: (context, snapshot) {
+//                         print(snapshot.data);
+//                         if (snapshot.hasData) {
+//                           List<Video> _totalVideo = [];
+//                           snapshot.data.forEach((channel) {
+//                             channel.videos
+//                                 .forEach((video) => _totalVideo.add(video));
+//                           });
+//                           return Column(
+//                             children: _totalVideo
+//                                 .map((video) => _buildVideo(video))
+//                                 .toList(),
+//                           );
+//                         } else if (snapshot.connectionState ==
+//                                 ConnectionState.active ||
+//                             snapshot.connectionState ==
+//                                 ConnectionState.waiting) {
+//                           return Center(
+//                             child: CircularProgressIndicator(),
+//                           );
+//                         }
+//                         return Center(
+//                           child: Column(
+//                             mainAxisAlignment: MainAxisAlignment.center,
+//                             children: [
+//                               Text('Be sure your internet is fine and retry'),
+//                               FlatButton(
+//                                 color: Colors.grey[400],
+//                                 child: Text(
+//                                   'Retry again',
+//                                 ),
+//                                 onPressed: () => this.setState(() {}),
+//                               )
+//                             ],
 //                           ),
-//                           onPressed: () => this.setState(() {}),
-//                         )
-//                       ],
+//                         );
+//                       },
 //                     ),
-//                   );
-//                 },
+//                   ),
+//                   Container(
+//                     child: StreamBuilder<List<Channel>>(
+//                       stream: APIService.instance.getListOfChannels(
+//                           channelListID: CHANNEL_ID_LIST_PART_2),
+//                       builder: (context, snapshot) {
+//                         print(snapshot.data);
+//                         if (snapshot.hasData) {
+//                           List<Video> _totalVideo = [];
+//                           snapshot.data.forEach((channel) {
+//                             channel.videos
+//                                 .forEach((video) => _totalVideo.add(video));
+//                           });
+//                           return Column(
+//                             children: _totalVideo
+//                                 .map((video) => _buildVideo(video))
+//                                 .toList(),
+//                           );
+//                         } else if (snapshot.connectionState ==
+//                                 ConnectionState.active ||
+//                             snapshot.connectionState ==
+//                                 ConnectionState.waiting) {
+//                           return Center(
+//                             child: CircularProgressIndicator(),
+//                           );
+//                         }
+//                         return Center(
+//                           child: Column(
+//                             mainAxisAlignment: MainAxisAlignment.center,
+//                             children: [
+//                               Text('Be sure your internet is fine and retry'),
+//                               FlatButton(
+//                                 color: Colors.grey[400],
+//                                 child: Text(
+//                                   'Retry again',
+//                                 ),
+//                                 onPressed: () => this.setState(() {}),
+//                               )
+//                             ],
+//                           ),
+//                         );
+//                       },
+//                     ),
+//                   ),
+//                 ],
 //               ),
 //             )
+// //It alradey one
+//           //Ready to try
+//           //Anyways that part after the :  won't be trigger at all
 //           : _channel != null
 //               ? NotificationListener<ScrollNotification>(
 //                   onNotification: (ScrollNotification scrollDetails) {
@@ -212,7 +266,7 @@
 //                             int.parse(_channel.videoCount) &&
 //                         scrollDetails.metrics.pixels ==
 //                             scrollDetails.metrics.maxScrollExtent) {
-//                       _loadMoreVideos();
+//                       // _loadMoreVideos();
 //                     }
 //                     return false;
 //                   },

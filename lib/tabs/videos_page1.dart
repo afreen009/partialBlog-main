@@ -9,6 +9,7 @@ class VideoPlayerApp extends StatefulWidget {
   _VideoPlayerAppState createState() => _VideoPlayerAppState();
 }
 
+//only two channel videos are seen sure ? yese second one
 class _VideoPlayerAppState extends State<VideoPlayerApp> {
   Channel _channel;
   Channel _channel1;
@@ -31,13 +32,13 @@ class _VideoPlayerAppState extends State<VideoPlayerApp> {
         .fetchChannel(channelId: 'UCsu2ICvlMu3NtaTxfEnupXA');
     // Channel channel2 = await APIService.instance
     //     .fetchChannel(channelId: 'UCGuFh3Ul7OxJd3MUDKP2cLw');
-    // Channel channel3 = await APIService.instance
-    //     .fetchChannel(channelId: 'UCKmwUXQLo6ny-GD2a0dOf8Q');
+    Channel channel3 = await APIService.instance
+        .fetchChannel(channelId: 'UCKmwUXQLo6ny-GD2a0dOf8Q');
     setState(() {
       _channel = channel;
       _channel1 = channel1;
       // _channel2 = channel2;
-      // _channel3 = channel3;
+      _channel3 = channel3;
     });
   }
 
@@ -123,14 +124,16 @@ class _VideoPlayerAppState extends State<VideoPlayerApp> {
     //     .fetchVideosFromPlaylist(playlistId: _channel2.uploadPlaylistId);
     // List<Video> allVideos2 = _channel2.videos..addAll(moreVideos2);
 
-    // List<Video> moreVideos3 = await APIService.instance
-    //     .fetchVideosFromPlaylist(playlistId: _channel3.uploadPlaylistId);
-    // List<Video> allVideos3 = _channel3.videos..addAll(moreVideos3);
+    List<Video> moreVideos3 = await APIService.instance
+        .fetchVideosFromPlaylist(playlistId: _channel3.uploadPlaylistId);
+    List<Video> allVideos3 = _channel3.videos..addAll(moreVideos3);
     setState(() {
       _channel.videos = allVideos;
       _channel1.videos = allVideos1;
+      //2 channels data is coming, let me add 2 more and see
+      //last time the count was different. cacn i see now? just a min?ok?y
       // _channel2.videos = allVideos2;
-      // _channel3.videos = allVideos3;
+      _channel3.videos = allVideos3;
     });
     _isLoading = false;
   }
@@ -161,15 +164,17 @@ class _VideoPlayerAppState extends State<VideoPlayerApp> {
                     Video video = _channel.videos[index - 1];
                     Video video1 = _channel1.videos[index - 1];
                     // Video video2 = _channel2.videos[index - 1];
-                    // Video video3 = _channel3.videos[index - 1];
+                    Video video3 = _channel3.videos[index - 1];
                     print(" video1  $video");
                     print('video2  $video1');
+                    //check now
+                    print(_channel3.videos.length);
                     return Column(
                       children: [
                         video != null ? _buildVideo(video) : Container(),
                         video1 != null ? _buildVideo(video1) : Container(),
                         // video2 != null ? _buildVideo(video2) : Container(),
-                        // video3 != null ? _buildVideo(video3) : Container(),
+                        video3 != null ? _buildVideo(video3) : Container(),
                       ],
                     );
                   },

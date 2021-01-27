@@ -3,12 +3,13 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PostScreen extends StatelessWidget {
-  final  postData;
+  final postData;
 
   const PostScreen({Key key, @required this.postData}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return SafeArea(
+      //Show me the place where we have to integrate it
       child: Scaffold(
         body: LayoutBuilder(
           builder: (context, _) => Stack(

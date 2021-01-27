@@ -2,18 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:google_signin_example/widget/helpers.dart';
 import 'package:google_signin_example/widget/post_card.dart';
-
+import 'package:flutter_web_browser/flutter_web_browser.dart';
 import '../model/post_entity.dart';
 
-class PostDetails extends StatelessWidget {
+class PostDetails extends StatefulWidget {
   final PostEntity post;
 
   PostDetails(this.post);
 
   @override
+  _PostDetailsState createState() => _PostDetailsState();
+}
+
+class _PostDetailsState extends State<PostDetails> {
+  openBrowserTab(url) async {
+    await FlutterWebBrowser.openWebPage(
+        url: url.toString(),
+        customTabsOptions: CustomTabsOptions(
+          colorScheme: CustomTabsColorScheme.dark,
+          toolbarColor: Colors.deepPurple,
+          secondaryToolbarColor: Colors.green,
+          navigationBarColor: Colors.amber,
+          addDefaultShareMenuItem: true,
+          instantAppsEnabled: true,
+          showTitle: true,
+          urlBarHidingEnabled: true,
+        )
+        // androidToolbarColor: Colors.deepPurple,
+        );
+  }
+
+  @override
   Widget build(BuildContext context) {
     // print(post);
-    post.isDetailCard = true;
+    widget.post.isDetailCard = true;
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       body: NestedScrollView(
@@ -27,11 +49,11 @@ class PostDetails extends StatelessWidget {
               flexibleSpace: FlexibleSpaceBar(
                 background: Stack(
                   children: <Widget>[
-                    post.image.isNotEmpty
+                    widget.post.image.isNotEmpty
                         ? Hero(
-                            tag: post.image,
+                            tag: widget.post.image,
                             child: CachedImage(
-                              post.image,
+                              widget.post.image,
                               width: size.width,
                               height: size.height,
                             ),
@@ -49,7 +71,7 @@ class PostDetails extends StatelessWidget {
                     ),
                     Positioned(
                       bottom: 0,
-                      child: Author(post: post),
+                      child: Author(post: widget.post),
                     ),
                     Positioned(
                       bottom: 35.0,
@@ -60,7 +82,7 @@ class PostDetails extends StatelessWidget {
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
-                                  post.title,
+                                  widget.post.title,
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
                                       color: Colors.white,
@@ -74,7 +96,7 @@ class PostDetails extends StatelessWidget {
                     Positioned(
                       bottom: 0,
                       right: 0,
-                      child: CategoryPill(post: post),
+                      child: CategoryPill(post: widget.post),
                     ),
                   ],
                 ),
@@ -84,7 +106,11 @@ class PostDetails extends StatelessWidget {
         },
         body: SingleChildScrollView(
           child: Html(
-            data: post.content,
+            data: widget.post.content,
+            onLinkTap: (url) async {
+              print("Opening $url...");
+              await openBrowserTab(url);
+            },
             padding: EdgeInsets.all(8.0),
             linkStyle: const TextStyle(
               color: Colors.blueAccent,
