@@ -35,7 +35,7 @@ class YoutubeAPIService {
     // Get Channel
     var response = await http.get(uri, headers: headers);
     if (response.statusCode == 200) {
-      print(channelId);
+      //channelId);
       Map<String, dynamic> data = json.decode(response.body)['items'][0];
       Channel channel = Channel.fromMap(data);
 
@@ -43,7 +43,7 @@ class YoutubeAPIService {
       channel.videos = await fetchVideosFromPlaylist(
         playlistId: channel.uploadPlaylistId,
       );
-      print('Hee');
+      //'Hee');
       return channel;
     } else {
       throw json.decode(response.body)['error']['message'];

@@ -9,7 +9,6 @@ class PostScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      //Show me the place where we have to integrate it
       child: Scaffold(
         body: LayoutBuilder(
           builder: (context, _) => Stack(
@@ -85,6 +84,10 @@ class PostScreen extends StatelessWidget {
                             }
                           },
                         ),
+                        FlatButton(
+                          child: Text('click to redeem points'),
+                          onPressed: () {},
+                        )
                       ],
                     ),
                   ),

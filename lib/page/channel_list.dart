@@ -24,7 +24,7 @@ class _ChannelListViewState extends State<ChannelListView> {
                 ._youtubeAPIService
                 .getListOfChannels(channelListID: CHANNEL_ID_LIST1),
             builder: (context, snapshot) {
-              print(snapshot.data);
+              //snapshot.data);
               if (snapshot.hasData) {
                 return SingleChildScrollView(
                   child: Container(
@@ -41,7 +41,7 @@ class _ChannelListViewState extends State<ChannelListView> {
                   child: CircularProgressIndicator(),
                 );
               } else if (snapshot.hasError) {
-                print(snapshot.error);
+                //snapshot.error);
               }
               return Text(snapshot.data.toString());
               // return Center(
@@ -66,7 +66,7 @@ class _ChannelListViewState extends State<ChannelListView> {
                 ._youtubeAPIService
                 .getListOfChannels(channelListID: CHANNEL_ID_LIST2),
             builder: (context, snapshot) {
-              print(snapshot.data);
+              //snapshot.data);
               if (snapshot.hasData) {
                 return SingleChildScrollView(
                   child: Container(
@@ -88,7 +88,7 @@ class _ChannelListViewState extends State<ChannelListView> {
                   child: CircularProgressIndicator(),
                 );
               } else if (snapshot.hasError) {
-                print(snapshot.error);
+                //snapshot.error);
               }
               return Text(snapshot.data.toString());
               // return Center(

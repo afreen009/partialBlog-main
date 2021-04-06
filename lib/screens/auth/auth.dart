@@ -1,33 +1,33 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
-final GoogleSignIn googleSignIn = GoogleSignIn();
+// final FirebaseAuth _auth = FirebaseAuth.instance;
+// final GoogleSignIn googleSignIn = GoogleSignIn();
 
-Future<FirebaseUser> signInWithGoogle() async {
-  final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
-  final GoogleSignInAuthentication googleSignInAuthentication =
-      await googleSignInAccount.authentication;
+// Future<FirebaseUser> signInWithGoogle() async {
+//   final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+//   final GoogleSignInAuthentication googleSignInAuthentication =
+//       await googleSignInAccount.authentication;
 
-  final AuthCredential credential = GoogleAuthProvider.getCredential(
-      idToken: googleSignInAuthentication.idToken,
-      accessToken: googleSignInAuthentication.accessToken);
+//   final AuthCredential credential = GoogleAuthProvider.getCredential(
+//       idToken: googleSignInAuthentication.idToken,
+//       accessToken: googleSignInAuthentication.accessToken);
 
-  final AuthResult authResult = await _auth.signInWithCredential(credential);
-  final FirebaseUser user = authResult.user;
+//   final AuthResult authResult = await _auth.signInWithCredential(credential);
+//   final FirebaseUser user = authResult.user;
 
-  assert(!user.isAnonymous);
-  assert(await user.getIdToken() != null);
+//   assert(!user.isAnonymous);
+//   assert(await user.getIdToken() != null);
 
-  final FirebaseUser currentUser = await _auth.currentUser();
-  assert(currentUser.uid == user.uid);
+//   final FirebaseUser currentUser = await _auth.currentUser();
+//   assert(currentUser.uid == user.uid);
 
-  return user;
-}
+//   return user;
+// }
 
-void signOutGoogle() async {
-  await googleSignIn.signOut();
-}
+// void signOutGoogle() async {
+//   await googleSignIn.signOut();
+// }
 
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter/cupertino.dart';
@@ -84,7 +84,7 @@ void signOutGoogle() async {
 //     // AuthResult result = await auth.signInWithCredential(credential);
 
 //     FirebaseUser user = await auth.currentUser();
-//     print(user.uid);
+//     //user.uid);
 
 //     return Future.value(true);
 //   }
@@ -103,7 +103,7 @@ void signOutGoogle() async {
 //     return Future.value(user);
 //   } catch (e) {
 //     // simply passing error code as a message
-//     print(e.code);
+//     //e.code);
 //     switch (e.code) {
 //       case 'ERROR_INVALID_EMAIL':
 //         showErrDialog(context, e.code);
@@ -161,7 +161,7 @@ void signOutGoogle() async {
 //   await auth.signOut();
 //   return Future.value(true);
 //   // FirebaseUser user = await auth.currentUser();
-//   // print(user.providerData[1].providerId);
+//   // //user.providerData[1].providerId);
 //   // if (user.providerData[1].providerId == 'google.com') {
 //   //   await gooleSignIn.disconnect();
 //   // }

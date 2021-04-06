@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_signin_example/widget/config.dart';
 import 'package:google_signin_example/widget/featured_category_list.dart';
 import 'package:google_signin_example/widget/posts_list.dart';
+import '../admob.dart';
 import 'listHeading.dart';
 
 class First extends StatefulWidget {
@@ -19,7 +20,7 @@ class _FirstState extends State<First> {
           children: <Widget>[
             ListHeading(FEATURED_CATEGORY_TITLE, FEATURED_CATEGORY_ID),
             Container(
-              height: 180.0,
+              height: 200.0,
               child: FeaturedCategoryList(
                 'http://festivalsofearth.com/',
               ),

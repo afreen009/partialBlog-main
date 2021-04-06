@@ -7,7 +7,7 @@ import '../network/wp_api.dart';
 import 'config.dart';
 
 class FeaturedCategoryList extends StatefulWidget {
-  String url;
+  final String url;
   FeaturedCategoryList(this.url);
   @override
   _FeaturedCategoryListState createState() => _FeaturedCategoryListState();
@@ -25,22 +25,24 @@ class _FeaturedCategoryListState extends State<FeaturedCategoryList>
     // print(FEATURED_CATEGORY_ID);
     WpApi.getPostsList(category: FEATURED_CATEGORY_ID, baseurl: widget.url)
         .then((_posts) {
-      setState(() {
-        isLoading = false;
-        posts.addAll(_posts);
-      });
-    }).then((value) => print(posts));
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          posts.addAll(_posts);
+        });
+      }
+      posts.shuffle();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    List<PostEntity> items = posts.reversed.toList();
     // print(items);
     super.build(context);
     return isLoading
         ? SizedBox(
             width: MediaQuery.of(context).size.width,
-            height: 300.0,
+            height: 200.0,
             child: Shimmer.fromColors(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -53,12 +55,12 @@ class _FeaturedCategoryListState extends State<FeaturedCategoryList>
               direction: ShimmerDirection.ltr,
             ))
         : ListView.builder(
-            itemCount: items?.length ?? 0,
+            itemCount: posts?.length ?? 0,
             scrollDirection: Axis.horizontal,
             shrinkWrap: true,
 //            physics: ClampingScrollPhysics(),
             itemBuilder: (context, index) {
-              return PostCard(items[index], isFeaturedList: true);
+              return PostCard(posts[index], isFeaturedList: true);
             },
           );
   }

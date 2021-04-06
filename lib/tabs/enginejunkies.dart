@@ -1,8 +1,9 @@
+// import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:google_signin_example/page/search.dart';
 import 'package:google_signin_example/widget/config.dart';
 import 'package:google_signin_example/widget/featured_category_list.dart';
 import 'package:google_signin_example/widget/posts_list.dart';
+import '../admob.dart';
 import 'listHeading.dart';
 
 class EngineJunkies extends StatefulWidget {
@@ -20,13 +21,16 @@ class _EngineJunkiesState extends State<EngineJunkies> {
           children: <Widget>[
             ListHeading(FEATURED_CATEGORY_TITLE, FEATURED_CATEGORY_ID),
             Container(
-              height: 250.0,
-              child: FeaturedCategoryList('https://enginejunkies.com/'),
+              height: 200.0,
+              child: FeaturedCategoryList('https://bookworms99.com/'),
             ),
+            // AdmobBanner(
+            //     adUnitId: AdMobServices.bannerId,
+            //     adSize: AdmobBannerSize.BANNER),
             ListHeading('Latest', 0),
             Flexible(
               fit: FlexFit.loose,
-              child: PostsList(baseurl: 'http://enginejunkies.com/'),
+              child: PostsList(baseurl: 'https://bookworms99.com/'),
             ),
           ],
         ),

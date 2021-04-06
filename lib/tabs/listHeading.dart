@@ -17,8 +17,7 @@ class ListHeading extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              // color: Colors.white,
-              fontSize: 30,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),

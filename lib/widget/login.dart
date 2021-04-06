@@ -151,8 +151,8 @@
 //                     SizedBox(height: 10),
 //                     InkWell(
 //                       onTap: () {
-//                         // Navigator.of(context).pushReplacement(MaterialPageRoute(
-//                         //     builder: (context) => SignUpScreen()));
+// Navigator.of(context).pushReplacement(MaterialPageRoute(
+//     builder: (context) => SignUpScreen()));
 //                       },
 //                       child: Text(
 //                         'Sign up',

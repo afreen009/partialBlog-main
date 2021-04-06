@@ -9,6 +9,8 @@ class WpApi {
 
   static Future<List<PostEntity>> getPostsList(
       {int category = 0, int page = 1, String baseurl}) async {
+    print('inside the getpostlist');
+
     List<PostEntity> posts = List();
     try {
       String extra = category != 0 ? '&categories=' + '$category' : '';
@@ -17,13 +19,14 @@ class WpApi {
       dynamic response = await http
           .get(baseurl + REST_URL_PREFIX + '/wp/v2/posts?_embed&page=$page');
       dynamic json = jsonDecode(response.body);
-
+      print('response:$response');
       (json as List).forEach((v) {
         posts.add(PostEntity.fromJson(v));
       });
     } catch (e) {
       //TODO Handle No Internet Response
     }
+    // print(posts);
     return posts;
   }
 
@@ -33,10 +36,10 @@ class WpApi {
     try {
       dynamic response = await http.get(baseurl +
           REST_URL_PREFIX +
-          '/wp/v2/categories?orderby=count&order=desc&per_page=15&page=$page');
+          '/wp/v2/categories?orderby=count&order=desc&page=$page');
       print(baseurl +
           REST_URL_PREFIX +
-          '/wp/v2/categories?orderby=count&order=desc&per_page=15&page=$page');
+          '/wp/v2/categories?orderby=count&order=desc&page=$page');
       dynamic json = jsonDecode(response.body);
 
       (json as List).forEach((v) {
@@ -46,12 +49,5 @@ class WpApi {
       //TODO Handle No Internet Response
     }
     return categories;
-  }
-
-  //TO get a single Post item reversed from the post link
-  static Future<PostEntity> getSinglePostDetails(String postUrl) async {
-    final String baseUrl = postUrl.split('//')[1].split('/')[0].trim();
-    List<PostEntity> _postList = await WpApi.getPostsList(baseurl: baseUrl);
-    return _postList.firstWhere((postItem) => postItem.link == postUrl);
   }
 }

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:google_signin_example/database/databasehelep.dart';
+import 'package:google_signin_example/database/db_model.dart';
 import 'package:google_signin_example/model/video.dart';
 import 'package:google_signin_example/network/youtube_channel.dart';
+import 'package:google_signin_example/page/post_details.dart';
 import 'package:google_signin_example/widget/config.dart';
+import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../model/post_entity.dart';
@@ -10,81 +15,172 @@ import 'home_post.dart';
 
 class HomeCategory extends StatefulWidget {
   final String option;
-  final List<PostEntity> data;
-  HomeCategory({this.data, this.option});
+  final List<String> url;
+  // final List<PostEntity> data;
+  HomeCategory({this.url, this.option});
   @override
   _HomeCategoryState createState() => _HomeCategoryState();
 }
 
 class _HomeCategoryState extends State<HomeCategory>
     with AutomaticKeepAliveClientMixin {
-  // List<PostEntity> posts = new List<PostEntity>();
+  List<PostEntity> posts = new List<PostEntity>();
   bool isLoading = true;
   YoutubeResponse youtubeResponse = new YoutubeResponse();
   List videoList;
+  Color primaryColor = Color(0xff18203d);
   @override
   void initState() {
-    // print('here' + widget.url);
+    // //'here' + widget.url);
     super.initState();
     getVideo();
   }
 
   void getVideo() async {
-    // for (int i = 0; i < widget.url.length; i++) {
-    //   WpApi.getPostsList(category: FEATURED_CATEGORY_ID, baseurl: widget.url[i])
-    //       .then((_posts) {
-    //     posts.addAll(_posts);
-    //   }).then((value) => isLoading = false);
-    // }
-    videoList = await youtubeResponse.initChannel();
+    for (int i = 0; i < widget.url.length; i++) {
+      WpApi.getPostsList(category: FEATURED_CATEGORY_ID, baseurl: widget.url[i])
+          .then((_posts) {
+        setState(() {
+          isLoading = false;
+          posts.addAll(_posts);
+        });
+      });
+    }
+    // videoList = await youtubeResponse.initChannel();
   }
 
   @override
   Widget build(BuildContext context) {
     // items.forEach((element) => videoList.add(element));
     // var newList = items + videoList;
-    // newList.shuffle();
-    print(videoList);
+    posts.shuffle();
+    //videoList);
     super.build(context);
-    return isLoading
-        ? SizedBox(
-            width: MediaQuery.of(context).size.width / 2,
-            height: 300.0,
+    return isLoading || posts.isEmpty
+        ? Container(
+            width: MediaQuery.of(context).size.width,
             child: ListView.builder(
-              itemCount: 10,
+              itemCount: 7,
               scrollDirection: Axis.horizontal,
+              primary: false,
               itemBuilder: (context, index) {
-                return Shimmer.fromColors(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Card(
-                      color: Colors.grey,
+                return SizedBox(
+                    width: 150,
+                    height: 150.0,
+                    child: Shimmer.fromColors(
+                      child: Swiper(
+                        itemBuilder: (BuildContext context, int index) {
+                          return Card(
+                            color: Colors.white,
+                          );
+                        },
+                        // pagination: new SwiperPagination(),
+                        // control: new SwiperControl(),
+
+                        itemCount: posts.length,
+                        viewportFraction: 0.9,
+                        scale: 0.8,
+                      ),
+                      baseColor: Colors.white,
+                      highlightColor: Colors.grey,
+                      direction: ShimmerDirection.ltr,
+                    ));
+              },
+            ),
+          )
+        : Swiper(
+            itemBuilder: (BuildContext context, int index) {
+              return Stack(
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      DateTime date = DateTime.now();
+                      var newDt = DateFormat.yMMMEd().format(date);
+
+                      //storing data locally - SQFLITE
+                      await PersonDatabaseProvider.db
+                          .addPersonToDatabase(DbModel(
+                        name: posts[index].image,
+                        date: posts[index].date,
+                      ));
+
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PostDetails(posts[index])));
+                    },
+                    child: Container(
+                      height: 130,
+                      decoration: BoxDecoration(
+                          color: Colors.white10,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Center(
+                        child: posts[index].image.isNotEmpty
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10.0),
+                                child: Image.network(
+                                  posts[index].image,
+                                  fit: BoxFit.cover,
+                                ))
+                            : Center(
+                                child: Image.asset(
+                                  "assets/no-image.png",
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                      ),
                     ),
                   ),
-                  baseColor: Colors.white70,
-                  highlightColor: Colors.grey[700],
-                  direction: ShimmerDirection.ltr,
-                );
-              },
-            ))
-        : ListView.builder(
-            primary: false,
-            itemCount: 5,
-            scrollDirection: Axis.horizontal,
-            shrinkWrap: true,
-            physics: ClampingScrollPhysics(),
-            itemBuilder: (context, index) {
-              return widget.data.isNotEmpty
-                  ? HomePost(
-                      widget.data[index],
-                      isFeaturedList: true,
-                      option: widget.option,
-                      videoList:
-                          videoList[index] != null ? videoList[index] : [],
-                    )
-                  : Container();
+                  Positioned(
+                    bottom: 0,
+                    top: 110,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                        decoration: BoxDecoration(
+                            color: Color(0xFF161b18),
+                            borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(10),
+                                bottomRight: Radius.circular(10))),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 8.0, right: 8.0, top: 8.0),
+                          child: Text(
+                            posts[index].title,
+                            textAlign: TextAlign.left,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        )),
+                  )
+                ],
+              );
             },
+            // pagination: new SwiperPagination(),
+            control: new SwiperControl(),
+
+            itemCount: posts.length,
+            viewportFraction: 0.7,
+            scale: 0.8,
           );
+    // : ListView.builder(
+    //     primary: false,
+    //     itemCount: 5,
+    //     scrollDirection: Axis.horizontal,
+    //     shrinkWrap: true,
+    //     physics: ClampingScrollPhysics(),
+    //     itemBuilder: (context, index) {
+    //       return HomePost(
+    //         posts[index],
+    //         isFeaturedList: true,
+    //         option: widget.option,
+    //       );
+    //     },
+    //   );
   }
 
   @override

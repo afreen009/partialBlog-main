@@ -1,27 +1,26 @@
-import 'package:dio/dio.dart';
-import 'package:firebase_admob/firebase_admob.dart';
+import 'dart:io';
+import 'package:admob_flutter/admob_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_signin_example/admob.dart';
+import 'package:google_signin_example/database.dart';
+// import 'package:google_signin_example/database/authentication.dart';
 import 'package:google_signin_example/model/channel.dart';
-import 'package:google_signin_example/model/channel_models.dart';
 import 'package:google_signin_example/model/post_entity.dart';
 import 'package:google_signin_example/model/video.dart';
-import 'package:google_signin_example/model/video_model.dart';
-import 'package:google_signin_example/network/wp_api.dart';
 import 'package:google_signin_example/page/home_category.dart';
 import 'package:google_signin_example/page/video_Page.dart';
-import 'package:google_signin_example/page/view_all.dart';
-import 'package:google_signin_example/screens/video_screen.dart';
+import 'package:google_signin_example/providers/user_provder.dart';
 import 'package:google_signin_example/services/api_services.dart';
-import 'package:google_signin_example/tabs/video2.dart';
-import 'package:google_signin_example/tabs/videosPage.dart';
-import 'package:google_signin_example/widget/config.dart';
-
-import 'explore_page.dart';
+import 'package:google_signin_example/states/current_user.dart';
+import 'package:google_signin_example/tabs/homevideo.dart';
+import 'package:google_signin_example/widget/signin.dart';
+import 'package:provider/provider.dart';
+// import 'package:admob_flutter/admob_flutter.dart';
 
 class Articles extends StatefulWidget {
-  List<PostEntity> data;
-  Articles({this.data});
+  final List<PostEntity> searchList;
+  Articles(this.searchList);
   @override
   _ArticlesState createState() => _ArticlesState();
 }
@@ -30,29 +29,50 @@ class _ArticlesState extends State<Articles> {
   Channel _channel;
   bool _isLoading = false;
   VideoPlayerApp3 list = new VideoPlayerApp3();
+  Color primaryColor = Color(0xff18203d);
+  Color secondaryColor = Color(0xff232c51);
+  Color logoGreen = Color(0xff25bcbb);
+  // AdmobInterstitial interstitial;
+  // AdmobReward reward;
+  AdmobBannerSize bannerSize;
   @override
   void initState() {
     List tempList = new List();
+
     // TODO: implement initState
     super.initState();
+    print(widget.searchList);
+    // _initChannel();
 
-    _initChannel();
-    FirebaseAdMob.instance.initialize(appId: BannerAd.testAdUnitId);
-    // _bannerAd = myBanner
-    //   ..load()
-    //   ..show(
-    //     anchorType: AnchorType.top,
-    //     anchorOffset: kToolbarHeight + 50,
-    //   );
+    // You should execute `Admob.requestTrackingAuthorization()` here before showing any ad.
+
+    bannerSize = AdmobBannerSize.BANNER;
+    // interstitial = AdmobInterstitial(adUnitId: AdMobServices.interstitialId);
+    // interstitial.load();
+    // reward = AdmobReward(
+    //   adUnitId: AdMobServices.rewardId,
+    //   // listener: (AdmobAdEvent event, Map<String, dynamic>? args) {
+    //   //   if (event == AdmobAdEvent.closed) interstitial.load();
+    //   //   // handleEvent(event, args, 'Interstitial');
+    //   // },
+    //   listener: (event, args) {
+    //     if (event == AdmobAdEvent.rewarded) {
+    //       print("User rewarded.......");
+    //     }
+    //   },
+    // );
+    // reward.load();
+    // //a min let me
   }
 
-  _initChannel() async {
-    Channel channel4 = await APIService.instance
-        .fetchChannel(channelId: 'UCgpDrKxkgzFYKPh1wOQuY8Q');
-    setState(() {
-      _channel = channel4;
-    });
-  }
+  // _initChannel() async {
+  // List list = await widget.searchList;
+  // Channel channel4 = await APIService.instance
+  //     .fetchChannel(channelId: 'UCgpDrKxkgzFYKPh1wOQuY8Q');
+  // setState(() {
+  //   _channel = channel4;
+  // });
+  // }
 
   _loadMoreVideos() async {
     _isLoading = true;
@@ -65,91 +85,77 @@ class _ArticlesState extends State<Articles> {
     });
     _isLoading = false;
   }
-
-  static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
-    keywords: <String>['flutterio', 'beautiful apps'],
-    contentUrl: 'https://flutter.io',
-    childDirected: false,
-    testDevices: <String>[], // Android emulators are considered test devices
-  );
-
-  BannerAd myBanner = BannerAd(
-    adUnitId: BannerAd.testAdUnitId,
-    size: AdSize.banner,
-    targetingInfo: targetingInfo,
-    listener: (MobileAdEvent event) {
-      print("BannerAd event is $event");
-    },
-  );
-
-  InterstitialAd myInterstitialAd = InterstitialAd(
-    adUnitId: InterstitialAd.testAdUnitId,
-    targetingInfo: targetingInfo,
-    listener: (MobileAdEvent event) {
-      print("InterstitialAd event is $event");
-    },
-  );
-
-  BannerAd _bannerAd;
-  _buildVideo(Video video) {
-    return Flex(
-      direction: Axis.vertical,
-      children: [
-        GestureDetector(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => VideoScreen(id: video.id),
-            ),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(15)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black12,
-                  offset: Offset(0, 1),
-                  blurRadius: 6.0,
-                ),
-              ],
-            ),
-            child: Image(image: NetworkImage(video.thumbnailUrl)),
-          ),
-        ),
-        Container(
-          height: 45,
-          width: double.infinity,
-          child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  backgroundColor: Colors.white,
-                  radius: 20.0,
-                  backgroundImage: NetworkImage(_channel.profilePictureUrl),
-                ),
-                Expanded(child: Text('  ' + video.title)),
-              ],
-            ),
-          ),
-        ),
-        SizedBox(
-          height: 15,
-        )
-      ],
-    );
-  }
+//can u tell me where u want to create this object, ill show u that, cause i have not used the userdata object
+//Okay np prblem, just show me where you fetch userdata when you fetch u
+////i fetch in 2 place first place is hete
+  // _buildVideo(Video video) {
+  //   return Flex(
+  //     direction: Axis.vertical,
+  //     children: [
+  //       GestureDetector(
+  //         onTap: () => Navigator.push(
+  //           context,
+  //           MaterialPageRoute(
+  //             builder: (_) => VideoScreen(id: video.id),
+  //           ),
+  //         ),
+  //         child: Container(
+  //           decoration: BoxDecoration(
+  //             color: Colors.white,
+  //             borderRadius: BorderRadius.all(Radius.circular(15)),
+  //             boxShadow: [
+  //               BoxShadow(
+  //                 color: Colors.black12,
+  //                 offset: Offset(0, 1),
+  //                 blurRadius: 6.0,
+  //               ),
+  //             ],
+  //           ),
+  //           child: Image(image: NetworkImage(video.thumbnailUrl)),
+  //         ),
+  //       ),
+  //       Container(
+  //         height: 45,
+  //         width: double.infinity,
+  //         child: Padding(
+  //           padding: EdgeInsets.all(8.0),
+  //           child: Row(
+  //             children: [
+  //               CircleAvatar(
+  //                 backgroundColor: Colors.white,
+  //                 radius: 20.0,
+  //                 backgroundImage: NetworkImage(_channel.profilePictureUrl),
+  //               ),
+  //               Expanded(child: Text('  ' + video.title)),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //       SizedBox(
+  //         height: 15,
+  //       )
+  //     ],
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: SingleChildScrollView(
+    return SingleChildScrollView(
       child: Container(
+        height: MediaQuery.of(context).size.height,
         child: Column(
-          children: [
+          mainAxisAlignment: MainAxisAlignment.center,
+          // mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            // AdmobBanner(
+            //     adUnitId: AdMobServices.bannerId,
+            //     adSize: AdmobBannerSize.BANNER),
+            // SizedBox(
+            //   height: 5,
+            // ),
+
             SizedBox(
-              height: 80,
+              height: 15,
             ),
             Row(
               children: [
@@ -157,230 +163,123 @@ class _ArticlesState extends State<Articles> {
                   width: 10,
                 ),
                 Text(
-                  "Top Posts",
+                  "Most Viewed",
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      shadows: [
+                        BoxShadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.15),
+                          offset: Offset(0, 5),
+                          blurRadius: 10.0,
+                        )
+                      ]),
                 ),
                 Spacer(),
-                GestureDetector(
-                  onTap: () {
-                    myInterstitialAd
-                      ..load()
-                      ..show(
-                        anchorType: AnchorType.bottom,
-                        anchorOffset: 0.0,
-                        horizontalCenterOffset: 0.0,
-                      );
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ExplorePage(
-                                  baseurl: [
-                                    'https://enginejunkies.com/',
-                                    'http://festivalsofearth.com/',
-                                    'http://insuranceofearth.com/',
-                                    'https://bookworms99.com/'
-                                  ],
-                                  option: 'view',
-                                )));
-                  },
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: Color(0xff25bcbb),
-                    ),
-                    child: Text(
-                      "view all",
-                      style: TextStyle(
-                        color: Colors.grey[900],
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 5,
-                ),
-              ],
-            ),
-            Container(
-              height: MediaQuery.of(context).size.height / 8,
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(// BoxShape.circle or BoxShape.retangle
-                  //color: const Color(0xFF66BB6A),
-                  boxShadow: [
-                BoxShadow(
-                  color: Colors.grey[300],
-                  offset: new Offset(5.0, 5.0),
-                  blurRadius: 5.0,
-                ),
-              ]),
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: <Widget>[
-                  HomeCategory(
-                    data: widget.data,
-                    option: 'top',
-                  )
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-
-            // Row(
-            //   children: <Widget>[
-            //     RaisedButton(
-            //       onPressed: () async {
-            //         if (await interstitial.isLoaded) {
-            //           interstitial.show();
-            //         }
-            //       },
-            //       child: Text("Interstitial Ad"),
-            //     ),
-            //     SizedBox(
-            //       width: 10.0,
-            //     ),
-            //     RaisedButton(
-            //       onPressed: () async {
-            //         if (await reward.isLoaded) {
-            //           reward.show();
-            //         }
-            //       },
-            //       child: Text("Reward Ad"),
-            //     )
-            //   ],
-            // ),
-            // Expanded(
-            //   child: ListView.builder(
-            //       itemCount: 50,
-            //       itemBuilder: (context, index) {
-            //         if (index % 12 == 0 && index != 0) {
-            //           return AdmobBanner(
-            //               adUnitId: AdMobService.bannerId,
-            //               adSize: AdmobBannerSize.LARGE_BANNER);
-            //         }
-            //         return ListTile(
-            //           title: Text('Item $index'),
-            //         );
-            //       }),
-            // ),
-            Row(
-              children: [
-                SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  "Featured Posts",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-              ],
-            ),
-            Container(
-              height: MediaQuery.of(context).size.height / 6.5,
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(// BoxShape.circle or BoxShape.retangle
-                  //color: const Color(0xFF66BB6A),
-                  boxShadow: [
-                BoxShadow(
-                  color: Colors.grey[300],
-                  offset: new Offset(5.0, 5.0),
-                  blurRadius: 5.0,
-                ),
-              ]),
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: <Widget>[
-                  HomeCategory(
-                    data: widget.data,
-                    option: 'featured',
-                  )
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Row(
-              children: [
-                SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  'Videos',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            _channel != null
-                ? NotificationListener<ScrollNotification>(
-                    onNotification: (ScrollNotification scrollDetails) {
-                      if (!_isLoading &&
-                          _channel.videos.length !=
-                              int.parse(_channel.videoCount) &&
-                          scrollDetails.metrics.pixels ==
-                              scrollDetails.metrics.maxScrollExtent) {
-                        _loadMoreVideos();
-                      }
-                      return false;
+                Chip(
+                  label: Consumer<UserProvider>(
+                    builder: (context, userData, child) {
+                      return Text("Points: " + userData.user.points.toString(),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              shadows: [
+                                BoxShadow(
+                                  color: Color.fromRGBO(0, 0, 0, 0.15),
+                                  offset: Offset(0, 5),
+                                  blurRadius: 10.0,
+                                )
+                              ]));
                     },
-                    child: Container(
-                      padding: EdgeInsets.only(left: 6.0, right: 6.0),
-                      height: MediaQuery.of(context).size.height / 1.5,
-                      width: MediaQuery.of(context).size.width,
-                      child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(15)),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                offset: Offset(0, 1),
-                                blurRadius: 6.0,
-                              ),
-                            ],
-                          ),
-                          child: Video2()),
-                    ),
-                  )
-                : Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Theme.of(context).primaryColor, // Red
-                      ),
-                    ),
                   ),
+                ),
+
+                // GestureDetector(
+                //   onTap: () {
+                //     // myInterstitialAd
+                //     //   ..load()
+                //     //   ..show(
+                //     //     anchorType: AnchorType.bottom,
+                //     //     anchorOffset: 0.0,
+                //     //     horizontalCenterOffset: 0.0,
+                //     //   );
+                //     Navigator.push(
+                //         context,
+                //         MaterialPageRoute(
+                //             builder: (context) => ExplorePage(
+                //                   baseurl: [
+                //                     'https://enginejunkies.com/',
+                //                     'http://festivalsofearth.com/',
+                //                     'http://insuranceofearth.com/',
+                //                     'https://bookworms99.com/'
+                //                   ],
+                //                   option: 'view',
+                //                 )));
+                //   },
+                // child: Container(
+                //   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                //   decoration: BoxDecoration(
+                //     borderRadius: BorderRadius.circular(50),
+                //     color: Theme.of(context).primaryColor,
+                //   ),
+                //   child: Text(
+                //     "view all",
+                //     style: TextStyle(
+                //       color: Colors.white,
+                //       fontWeight: FontWeight.bold,
+                //       fontSize: 13,
+                //     ),
+                //   ),
+                // ),
+                // ),
+              ],
+            ),
+            SizedBox(height: 10),
+            Container(
+              height: 160.0,
+              color: Colors.blueGrey[100],
+              child: HomeCategory(
+                url: [
+                  'https://festivalsofearth.com/',
+                  'https://enginejunkies.com/'
+                ],
+                option: 'top',
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Row(
+              children: [
+                SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  "Latest",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      shadows: [
+                        BoxShadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.15),
+                          offset: Offset(0, 5),
+                          blurRadius: 10.0,
+                        )
+                      ]),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Flexible(
+              fit: FlexFit.loose,
+              child: HomeVideo(widget.searchList),
+            ),
           ],
         ),
       ),
-    ));
-  }
-
-  @override
-  void dispose() {
-    // _bannerAd.dispose();
-    // myInterstitialAd.dispose();
-    // TODO: implement dispose
-    super.dispose();
+    );
   }
 
   Widget makeStory({storyImage, userImage, userName}) {
@@ -455,10 +354,10 @@ class _ArticlesState extends State<Articles> {
                       Text(
                         userName,
                         style: TextStyle(
-                            color: Colors.grey[900],
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1),
+                          color: Colors.grey[900],
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       SizedBox(
                         height: 3,
@@ -651,5 +550,23 @@ class _ArticlesState extends State<Articles> {
         ),
       ),
     );
+  }
+
+  String getBannerAdUnitId() {
+    if (Platform.isIOS) {
+      return 'ca-app-pub-3940256099942544/2934735716';
+    } else if (Platform.isAndroid) {
+      return 'ca-app-pub-3940256099942544/6300978111';
+    }
+    return null;
+  }
+
+  @override
+  void dispose() {
+    // AdmobBannerController controller;
+    // controller.dispose();
+    // interstitial?.dispose();
+    // reward?.dispose();
+    super.dispose();
   }
 }

@@ -1,34 +1,46 @@
 name: google_signin_example
 version: 1.0.0+1
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.10.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
+  admob_flutter: ^1.0.1
   animations: ^1.1.2
+  auto_size_text: ^2.1.0
+  bubble_bottom_bar: ^1.2.0
   cached_network_image: ^2.0.0
-  cloud_firestore: null
+  circular_reveal_animation: ^1.1.5
+  cloud_firestore: ^0.14.3
   cupertino_icons: ^1.0.0
+  curved_navigation_bar: ^0.3.7
   custom_switch: ^0.0.1
   dio: ^3.0.10
-  firebase_auth: null
-  firebase_core: ^0.4.5
-  flappy_search_bar: ^1.7.2
+  firebase_auth: ^0.18.3
+  firebase_core: ^0.5.2
+  firebase_database: ^4.3.0
+  firebase_messaging: null
   flutter_html: ^0.11.0
-  flutter_web_browser: ^0.13.1
+  flutter_inapp_purchase: ^3.0.1
+  flutter_local_notifications: ^4.0.1+2
+  flutter_native_admob: null
+  flutter_swiper: ^1.1.6
+  flutter_wordpress: ^0.2.1
   fluttertoast: ^7.1.6
   font_awesome_flutter: ^8.10.0
   form_field_validator: ^1.0.1
   google_fonts: ^1.1.1
-  google_sign_in: ^4.4.4
+  google_sign_in: ^4.5.6
   html: null
   http: ^0.12.0+2
+  in_app_purchase: ^0.3.5+1
   intl: ^0.16.1
   lint: ^1.2.0
-  provider: ^4.3.2+2
+  provider: ^4.3.3
   receive_sharing_intent: ^1.4.2
   share: ^0.6.5+4
+  shared_preferences: ^0.5.12+4
   shimmer: ^1.1.2
   url_launcher: null
   youtube_player_flutter: ^6.0.3+2

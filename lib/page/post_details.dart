@@ -1,43 +1,37 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:google_signin_example/database.dart';
 import 'package:google_signin_example/widget/helpers.dart';
 import 'package:google_signin_example/widget/post_card.dart';
-import 'package:flutter_web_browser/flutter_web_browser.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../model/post_entity.dart';
 
-class PostDetails extends StatefulWidget {
+class PostDetails extends StatelessWidget {
   final PostEntity post;
-
-  PostDetails(this.post);
-
-  @override
-  _PostDetailsState createState() => _PostDetailsState();
-}
-
-class _PostDetailsState extends State<PostDetails> {
-  openBrowserTab(url) async {
-    await FlutterWebBrowser.openWebPage(
-        url: url.toString(),
-        customTabsOptions: CustomTabsOptions(
-          colorScheme: CustomTabsColorScheme.dark,
-          toolbarColor: Colors.deepPurple,
-          secondaryToolbarColor: Colors.green,
-          navigationBarColor: Colors.amber,
-          addDefaultShareMenuItem: true,
-          instantAppsEnabled: true,
-          showTitle: true,
-          urlBarHidingEnabled: true,
-        )
-        // androidToolbarColor: Colors.deepPurple,
-        );
+  PostDetails(
+    this.post,
+  );
+  FirebasesData fData = FirebasesData.instance;
+  void _showToast(BuildContext context) {
+    final scaffold = Scaffold.of(context);
+    scaffold.showSnackBar(
+      SnackBar(
+        content: const Text('+10 points added'),
+        // action: SnackBarAction(
+        //     label: 'UNDO', onPressed: scaffold.hideCurrentSnackBar),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     // print(post);
-    widget.post.isDetailCard = true;
+    // //post);
+    // post.isDetailCard = true;
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      // resizeToAvoidBottomPadding: false,
       body: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           Size size = MediaQuery.of(context).size;
@@ -45,33 +39,33 @@ class _PostDetailsState extends State<PostDetails> {
             SliverAppBar(
               iconTheme: IconThemeData(color: Colors.white),
               floating: true,
-              expandedHeight: 300.0,
+              expandedHeight: 100.0,
               flexibleSpace: FlexibleSpaceBar(
                 background: Stack(
                   children: <Widget>[
-                    widget.post.image.isNotEmpty
-                        ? Hero(
-                            tag: widget.post.image,
-                            child: CachedImage(
-                              widget.post.image,
-                              width: size.width,
-                              height: size.height,
-                            ),
+                    post.image.isNotEmpty
+                        ? CachedImage(
+                            post.image,
+                            width: size.width,
+                            height: size.height,
                           )
-                        : Text('no image'),
-                    Positioned(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.topCenter,
-                              colors: [Colors.amber, Colors.green]),
-                        ),
-                      ),
-                    ),
+                        : Container(
+                            color: Colors.white,
+                            child: Center(child: Text('no image'))),
+                    // Positioned(
+                    //   child: Container(
+                    //     height: 200,
+                    //     decoration: BoxDecoration(
+                    //       gradient: LinearGradient(
+                    //           begin: Alignment.bottomCenter,
+                    //           end: Alignment.topCenter,
+                    //           colors: [Colors.amber, Colors.green]),
+                    //     ),
+                    //   ),
+                    // ),
                     Positioned(
                       bottom: 0,
-                      child: Author(post: widget.post),
+                      child: Author(post: post),
                     ),
                     Positioned(
                       bottom: 35.0,
@@ -82,9 +76,16 @@ class _PostDetailsState extends State<PostDetails> {
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Text(
-                                  widget.post.title,
+                                  post.title,
                                   textAlign: TextAlign.left,
                                   style: TextStyle(
+                                      shadows: [
+                                        BoxShadow(
+                                          color: Colors.black,
+                                          offset: Offset(0, 5),
+                                          blurRadius: 10.0,
+                                        )
+                                      ],
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18.0),
@@ -96,7 +97,7 @@ class _PostDetailsState extends State<PostDetails> {
                     Positioned(
                       bottom: 0,
                       right: 0,
-                      child: CategoryPill(post: widget.post),
+                      child: CategoryPill(post: post),
                     ),
                   ],
                 ),
@@ -104,18 +105,48 @@ class _PostDetailsState extends State<PostDetails> {
             )
           ];
         },
-        body: SingleChildScrollView(
-          child: Html(
-            data: widget.post.content,
-            onLinkTap: (url) async {
-              print("Opening $url...");
-              await openBrowserTab(url);
-            },
-            padding: EdgeInsets.all(8.0),
-            linkStyle: const TextStyle(
-              color: Colors.blueAccent,
-              decorationColor: Colors.blueAccent,
-              decoration: TextDecoration.underline,
+        body: Scaffold(
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                Html(
+                  data: post.content,
+                  onLinkTap: (url) async {
+                    if (await canLaunch(url)) {
+                      await launch(url);
+                    } else {
+                      throw 'Could not launch $url';
+                    }
+                  },
+                  padding: EdgeInsets.all(8.0),
+                  linkStyle: const TextStyle(
+                    color: Colors.blueAccent,
+                    decorationColor: Colors.blueAccent,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+                // FlatButton(
+                //   color: Color(0xFF0d1117),
+                //   child: Text(
+                //     'click to redeem points',
+                //     style: TextStyle(color: Colors.white),
+                //   ),
+                //   onPressed: () {
+                //     print('redeem');
+                //     int points = this.points + 50;
+                //     Map<String, dynamic> data = {
+                //       'points': points,
+                //     };
+                //     fData.userCollection
+                //         .doc(fData.usersname.uid)
+                //         .set(data, SetOptions(merge: true))
+                //         .then((e) {
+                //       print('redeemed');
+                //       _showToast(context);
+                //     });
+                //   },
+                // )
+              ],
             ),
           ),
         ),

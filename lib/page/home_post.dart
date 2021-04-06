@@ -1,26 +1,27 @@
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_signin_example/database/databasehelep.dart';
+import 'package:google_signin_example/database/db_model.dart';
 import 'package:google_signin_example/firebaseservice.dart';
 import 'package:google_signin_example/model/users.dart';
 import 'package:google_signin_example/page/post_details.dart';
 import 'package:google_signin_example/page/sharing_post.dart';
 import 'package:google_signin_example/screens/video_screen.dart';
-import 'package:google_signin_example/services/firebase_service.dart';
 import 'package:google_signin_example/widget/helpers.dart';
+import 'package:intl/intl.dart';
 import 'package:share/share.dart';
-
+// import '../database/database_sqlite.dart';
 import '../model/post_entity.dart';
 
 class HomePost extends StatefulWidget {
-  String option;
-  PostEntity post;
-  bool isFeaturedList;
-  List videoList;
-  static const List<String> choices = <String>[
-    "share to...",
-  ];
+  final String option;
+  final PostEntity post;
+  final bool isFeaturedList;
+  final List videoList;
+  // static const List<String> choices = <String>[
+  //   "share to...",
+  // ];
   HomePost(this.post,
       {this.isFeaturedList = false, this.option, this.videoList});
 
@@ -30,16 +31,28 @@ class HomePost extends StatefulWidget {
 
 class _HomePostState extends State<HomePost> {
   SharingPost share;
-
   String _selectedChoices;
   Color logoGreen = Color(0xff25bcbb);
   final shareData = SharingPost();
-  final FirebaseServices firebaseService = FirebaseServices.instance;
+  // final FirebaseServices firebaseService = FirebaseServices.instance;
+  List<DbModel> db;
+  @override
+  void initState() {
+    getStatus();
+    // TODO: implement initState
+    super.initState();
+  }
+
   void _select(String choice) {
     setState(() {
       _selectedChoices = choice;
     });
     // showSnackBar(choice);
+  }
+
+  getStatus() async {
+    db = await PersonDatabaseProvider.db.getAllPersons();
+    // print(db);
   }
 
   sharePost(
@@ -62,12 +75,6 @@ class _HomePostState extends State<HomePost> {
         sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
   }
 
-  static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
-    keywords: <String>['flutterio', 'beautiful apps'],
-    contentUrl: 'https://flutter.io',
-    childDirected: false,
-    testDevices: <String>[], // Android emulators are considered test devices
-  );
   void showSnackBar(String selection) {
     final snackBarContent = SnackBar(
       content: Text('Selected: $selection'),
@@ -81,18 +88,16 @@ class _HomePostState extends State<HomePost> {
     // _scaffoldkey.currentState.showSnackBar(snackBarContent);
   }
 
-  addBookMarks(BookMarks data) {
+  addBookMarks(BookMarks data) async {
     print('inside add method');
-    firebaseService.saveDataBookMark(data);
+    // await firebaseService.saveDataBookMark(data);
+    Fluttertoast.showToast(
+      msg: "Saved",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+    );
   }
 
-  InterstitialAd myInterstitialAd = InterstitialAd(
-    adUnitId: InterstitialAd.testAdUnitId,
-    targetingInfo: targetingInfo,
-    listener: (MobileAdEvent event) {
-      print("InterstitialAd event is $event");
-    },
-  );
   @override
   Widget build(BuildContext context) {
     Color primaryColor = Color(0xff18203d);
@@ -112,14 +117,16 @@ class _HomePostState extends State<HomePost> {
           child: Row(
             children: [
               GestureDetector(
-                onTap: () {
-                  myInterstitialAd
-                    ..load()
-                    ..show(
-                      anchorType: AnchorType.bottom,
-                      anchorOffset: 0.0,
-                      horizontalCenterOffset: 0.0,
-                    );
+                onTap: () async {
+                  DateTime date = DateTime.now();
+                  var newDt = DateFormat.yMMMEd().format(date);
+
+                  //storing data locally - SQFLITE
+                  await PersonDatabaseProvider.db.addPersonToDatabase(DbModel(
+                    name: widget.post.title,
+                    date: widget.post.date,
+                  ));
+
                   if (widget.isFeaturedList)
                     Navigator.push(
                         context,
@@ -146,6 +153,7 @@ class _HomePostState extends State<HomePost> {
                             )
                           : Center(
                               child: Container(
+                                  color: Colors.white,
                                   height: 100,
                                   width: 100,
                                   child: Text('no image')),
@@ -156,27 +164,67 @@ class _HomePostState extends State<HomePost> {
                               left: 10,
                               top: 10,
                               child: Container(
-                                height: 25,
-                                width: 25,
-                                decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: PopupMenuButton(
-                                  color: Colors.white,
-                                  onSelected: (_select) => sharePost(context),
-                                  padding: EdgeInsets.zero,
-                                  // initialValue: choices[_selection],
-                                  itemBuilder: (BuildContext context) {
-                                    return HomePost.choices
-                                        .map((String choice) {
-                                      return PopupMenuItem<String>(
-                                        value: choice,
-                                        child: Text(choice),
-                                      );
-                                    }).toList();
-                                  },
-                                ),
-                              )),
+                                  height: 25,
+                                  width: 25,
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey[200],
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: PopupMenuButton(
+                                    onSelected: (value) {
+                                      print(value);
+                                      if (value == 'share') {
+                                        setState(() {
+                                          sharePost(context);
+                                        });
+                                      } else {
+                                        BookMarks bookMarks = BookMarks(
+                                            postsId: widget.post.id.toString(),
+                                            categoryId: widget.post.category);
+                                        addBookMarks(bookMarks);
+                                      }
+                                    },
+                                    padding: EdgeInsets.zero,
+                                    // initialValue: choices[_selection],
+                                    itemBuilder: (_) => <PopupMenuItem<String>>[
+                                      new PopupMenuItem<String>(
+                                          child: new Text('Share'),
+                                          value: 'share'),
+                                      new PopupMenuItem<String>(
+                                          child: new Text('Save'),
+                                          value: 'save'),
+                                    ],
+                                    // itemBuilder: (BuildContext context) {
+                                    //   return PostCard.choices.map((String choice) {
+                                    //     return PopupMenuItem<String>(
+                                    //       value: choice,
+                                    //       child: Text(choice),
+                                    //     );
+                                    //   }).toList();
+                                    // },
+                                  ))),
+                      widget.option == 'top'
+                          ? Positioned(
+                              bottom: 0,
+                              top: 90,
+                              child: Container(
+                                  width: 150,
+                                  color: primaryColor,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 8.0, right: 8.0, top: 8.0),
+                                    child: Text(
+                                      widget.post.title,
+                                      textAlign: TextAlign.left,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  )),
+                            )
+                          : Container,
                       widget.option == 'top'
                           ? Container()
                           : Positioned(
@@ -193,11 +241,7 @@ class _HomePostState extends State<HomePost> {
                                   BookMarks bookMarks = BookMarks(
                                       postsId: widget.post.id.toString(),
                                       categoryId: widget.post.category);
-                                  Fluttertoast.showToast(
-                                    msg: "Saved",
-                                    toastLength: Toast.LENGTH_SHORT,
-                                    gravity: ToastGravity.CENTER,
-                                  );
+
                                   addBookMarks(bookMarks);
                                 },
                                 child: Container(
@@ -207,6 +251,7 @@ class _HomePostState extends State<HomePost> {
                                   decoration: BoxDecoration(
                                       color: Colors.amber[200],
                                       borderRadius: BorderRadius.only(
+                                          bottomRight: Radius.circular(10),
                                           topLeft: Radius.circular(10))),
                                   height: 25,
                                   width: 50,
@@ -278,54 +323,129 @@ class _HomePostState extends State<HomePost> {
                                     left: 10,
                                     top: 10,
                                     child: Container(
-                                      height: 25,
-                                      width: 25,
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey[200],
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      child: PopupMenuButton(
-                                        color: Colors.white,
-                                        onSelected: (_select) =>
-                                            shareVideo(context),
-                                        padding: EdgeInsets.zero,
-                                        // initialValue: choices[_selection],
-                                        itemBuilder: (BuildContext context) {
-                                          return HomePost.choices
-                                              .map((String choice) {
-                                            return PopupMenuItem<String>(
-                                              value: choice,
-                                              child: Text(choice),
-                                            );
-                                          }).toList();
-                                        },
-                                      ),
-                                    )),
+                                        height: 25,
+                                        width: 25,
+                                        decoration: BoxDecoration(
+                                            color: Colors.grey[200],
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: PopupMenuButton(
+                                          onSelected: (value) {
+                                            print(value);
+                                            if (value == 'share') {
+                                              setState(() {
+                                                sharePost(context);
+                                              });
+                                            } else {
+                                              BookMarks bookMarks = BookMarks(
+                                                  postsId:
+                                                      widget.post.id.toString(),
+                                                  categoryId:
+                                                      widget.post.category);
+                                              addBookMarks(bookMarks);
+                                            }
+                                          },
+                                          padding: EdgeInsets.zero,
+                                          // initialValue: choices[_selection],
+                                          itemBuilder: (_) =>
+                                              <PopupMenuItem<String>>[
+                                            new PopupMenuItem<String>(
+                                                child: new Text('Share'),
+                                                value: 'share'),
+                                            new PopupMenuItem<String>(
+                                                child: new Text('Save'),
+                                                value: 'save'),
+                                          ],
+                                          // itemBuilder: (BuildContext context) {
+                                          //   return PostCard.choices.map((String choice) {
+                                          //     return PopupMenuItem<String>(
+                                          //       value: choice,
+                                          //       child: Text(choice),
+                                          //     );
+                                          //   }).toList();
+                                          // },
+                                        ))),
+                            Positioned(
+                              bottom: 0,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                        begin: Alignment.bottomCenter,
+                                        end: Alignment.topCenter,
+                                        colors: [
+                                      secondaryColor,
+                                      primaryColor
+                                    ])),
+                                width: width,
+                                // child: Padding(
+                                //   padding: const EdgeInsets.only(
+                                //       top: 15.0,
+                                //       bottom: 5.0,
+                                //       left: 5.0,
+                                //       right: 5.0),
+                                //   child: Column(
+                                //     children: <Widget>[
+                                //       Padding(
+                                //         padding: const EdgeInsets.all(3.0),
+                                //         child: Text(
+                                //           widget.post.title,
+                                //           textAlign: TextAlign.left,
+                                //           style: TextStyle(
+                                //               color: Colors.white,
+                                //               fontWeight: FontWeight.bold,
+                                //               fontSize: 18.0),
+                                //         ),
+                                //       ),
+                                //     ],
+                                //   ),
+                                // ),
+                              ),
+                            ),
                             Positioned(
                                 left: 10,
                                 top: 10,
                                 child: Container(
-                                  height: 25,
-                                  width: 25,
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey[200],
-                                      borderRadius: BorderRadius.circular(10)),
-                                  child: PopupMenuButton(
-                                    color: Colors.white,
-                                    onSelected: (_select) => sharePost(context),
-                                    padding: EdgeInsets.zero,
-                                    // initialValue: choices[_selection],
-                                    itemBuilder: (BuildContext context) {
-                                      return HomePost.choices
-                                          .map((String choice) {
-                                        return PopupMenuItem<String>(
-                                          value: choice,
-                                          child: Text(choice),
-                                        );
-                                      }).toList();
-                                    },
-                                  ),
-                                )),
+                                    height: 25,
+                                    width: 25,
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey[200],
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: PopupMenuButton(
+                                      onSelected: (value) {
+                                        print(value);
+                                        if (value == 'share') {
+                                          setState(() {
+                                            sharePost(context);
+                                          });
+                                        } else {
+                                          BookMarks bookMarks = BookMarks(
+                                              postsId:
+                                                  widget.post.id.toString(),
+                                              categoryId: widget.post.category);
+                                          addBookMarks(bookMarks);
+                                        }
+                                      },
+                                      padding: EdgeInsets.zero,
+                                      // initialValue: choices[_selection],
+                                      itemBuilder: (_) =>
+                                          <PopupMenuItem<String>>[
+                                        new PopupMenuItem<String>(
+                                            child: new Text('Share'),
+                                            value: 'share'),
+                                        new PopupMenuItem<String>(
+                                            child: new Text('Save'),
+                                            value: 'save'),
+                                      ],
+                                      // itemBuilder: (BuildContext context) {
+                                      //   return PostCard.choices.map((String choice) {
+                                      //     return PopupMenuItem<String>(
+                                      //       value: choice,
+                                      //       child: Text(choice),
+                                      //     );
+                                      //   }).toList();
+                                      // },
+                                    ))),
                             // Positioned(
                             //   child: Hero(tag: '${post.id}_author', child: Author(post: post)),
                             // )

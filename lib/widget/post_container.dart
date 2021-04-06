@@ -9,7 +9,7 @@ class PostContainer extends StatelessWidget {
       : super(key: key);
   @override
   Widget build(BuildContext context) {
-    // print(image);
+    // //image);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 9.0),
       child: ListTile(

@@ -109,7 +109,7 @@ class _Video3State extends State<Video3> {
     // int items1 = _channel1.videos.length;
     // int items2 = _channel2.videos.length;
     // // int items3 = _channel3.videos.length;
-    // print(items);
+    // //items);
     return Scaffold(
       body: _channel != null
           ? NotificationListener<ScrollNotification>(

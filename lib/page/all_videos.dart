@@ -12,9 +12,7 @@ class VideoTab extends StatefulWidget {
 class _VideoTabState extends State<VideoTab>
     with SingleTickerProviderStateMixin {
   TabController _tabController;
-  Color primaryColor = Color(0xff18203d);
-  Color secondaryColor = Color(0xff232c51);
-  Color logoGreen = Color(0xff25bcbb);
+
   @override
   void initState() {
     super.initState();
@@ -33,10 +31,10 @@ class _VideoTabState extends State<VideoTab>
           child: Column(
             children: [
               Container(
-                color: secondaryColor,
+                color: Colors.black,
                 child: TabBar(
-                  labelColor: Colors.white,
-                  indicatorColor: Colors.white,
+                  // labelColor: Colors.white,
+                  // indicatorColor: Colors.white,
                   // controller: _tabController,
                   tabs: <Widget>[
                     Tab(
@@ -44,7 +42,6 @@ class _VideoTabState extends State<VideoTab>
                         'Engine Junkies',
                         style: TextStyle(
                             fontSize: 12,
-                            color: Colors.white,
                             fontWeight: FontWeight.bold,
                             shadows: [
                               BoxShadow(
@@ -60,7 +57,6 @@ class _VideoTabState extends State<VideoTab>
                         'Insurance',
                         style: TextStyle(
                             fontSize: 12,
-                            color: Colors.white,
                             fontWeight: FontWeight.bold,
                             shadows: [
                               BoxShadow(
@@ -76,7 +72,6 @@ class _VideoTabState extends State<VideoTab>
                         'Books',
                         style: TextStyle(
                             fontSize: 12,
-                            color: Colors.white,
                             fontWeight: FontWeight.bold,
                             shadows: [
                               BoxShadow(
@@ -92,7 +87,6 @@ class _VideoTabState extends State<VideoTab>
                         'Festivals',
                         style: TextStyle(
                             fontSize: 12,
-                            color: Colors.white,
                             fontWeight: FontWeight.bold,
                             shadows: [
                               BoxShadow(
@@ -108,7 +102,7 @@ class _VideoTabState extends State<VideoTab>
               ),
               Expanded(
                 child: Container(
-                  // color: Colors.white,
+                  //
                   child: TabBarView(
                     children: [
                       VideoPlayerApp(),

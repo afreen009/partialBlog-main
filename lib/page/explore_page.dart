@@ -53,11 +53,13 @@ class _ExplorePageState extends State<ExplorePage> {
       WpApi.getPostsList(
               category: FEATURED_CATEGORY_ID, baseurl: widget.baseurl[i])
           .then((_posts) {
-        setState(() {
-          isLoading = false;
-          posts.addAll(_posts);
-        });
-      }).then((value) => print(posts));
+        if (mounted) {
+          setState(() {
+            isLoading = false;
+            posts.addAll(_posts);
+          });
+        }
+      });
     }
   }
 

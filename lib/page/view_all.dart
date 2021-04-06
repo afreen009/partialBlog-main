@@ -1,26 +1,350 @@
-import 'dart:async';
-import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_signin_example/widget/config.dart';
+import 'package:google_signin_example/database.dart';
+import 'package:google_signin_example/providers/user_provder.dart';
+import 'package:google_signin_example/states/current_user.dart';
 import 'package:google_signin_example/widget/post_list_item.dart';
+import 'package:google_signin_example/widget/posts_list.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
-import '../model/post_entity.dart';
-import '../network/wp_api.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:in_app_purchase/store_kit_wrappers.dart';
 
 class ViewAll extends StatelessWidget {
+  FirebasesData fData = FirebasesData.instance;
+  Color logoGreen = Color(0xff25bcbb);
+  ScrollController _scrollController = new ScrollController();
+  List aboutUs = [
+    'About Slasherhub And Its Approach to Digital Marketing Around Learning & Growing With our Users',
+    'Welcome to gosportx.com , Your best resource of finding all the sports related detais. Our team is very much dedicated to provide you the best of the important content',
+    'GoTrekx',
+    'GossipWheel',
+    'Welcome to trendznet.com, your number one source for all celebrities details. We’re dedicated to providing you the very best of content.'
+  ];
+  List image = [
+    'assets/idea.png',
+    'assets/gosport.png',
+    'assets/genius.png',
+    'assets/cars.png',
+    'assets/trendsTv.png'
+  ];
+  List blogs = [
+    'http://slasherhub.com/',
+    'http://gosportx.com/',
+    'http://gotrek.com/',
+    'http://gossipwheel.com/',
+    'http://trendznet.com/',
+  ];
+  User users = FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: Text('View All'),
+    return Scaffold(
+        body: DefaultTabController(
+      length: 2,
+      child: Column(
+        children: [
+          SafeArea(
+            child: Container(
+              color: Colors.black,
+              child: TabBar(
+                labelColor: Colors.white,
+                indicatorColor: Colors.white,
+                // controller: _tabController,
+                tabs: <Widget>[
+                  Tab(
+                    child: Text(
+                      'Points',
+                    ),
+                  ),
+                  Tab(
+                    child: Text(
+                      'Subscribed Blogs',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              // color: Colors.white,
+              child: TabBarView(
+                children: [
+                  SingleChildScrollView(
+                    child: Container(
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Container(
+                            height: 150,
+                            width: MediaQuery.of(context).size.width / 1.8,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                // borderRadius: BorderRadius.circular(120),
+                                color: Color(0xFF161b18)),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  height: 70,
+                                  width: 70,
+                                  child: Shimmer.fromColors(
+                                    period: Duration(milliseconds: 1500),
+                                    baseColor: logoGreen,
+                                    highlightColor: Colors.grey[300],
+                                    child: Image.asset(
+                                      'assets/logo.png',
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                ),
+                                Consumer<UserProvider>(
+                                  builder: (context, userData, child) {
+                                    return Text(
+                                        "Points: " +
+                                            userData.user.points.toString(),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18,
+                                            color: Colors.white,
+                                            shadows: [
+                                              BoxShadow(
+                                                color: Color.fromRGBO(
+                                                    0, 0, 0, 0.15),
+                                                offset: Offset(0, 5),
+                                                blurRadius: 10.0,
+                                              )
+                                            ]));
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                          ListView.builder(
+                            itemBuilder: (BuildContext context, int index) {
+                              return GestureDetector(
+                                onTap: () {
+                                  // Navigator.push(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //         builder: (context) => PostDetails(widget.post)));
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10.0, vertical: 4.0),
+                                  child: Card(
+                                    child: Container(
+                                      padding: EdgeInsets.all(8.0),
+                                      height: 150,
+                                      color: Colors.grey[300],
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            children: <Widget>[
+                                              ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                child: aboutUs[index] !=
+                                                        'no image'
+                                                    ? Container(
+                                                        width: 100,
+                                                        height: 85,
+                                                        child: Center(
+                                                            child: Image.asset(
+                                                          image[index],
+                                                          fit: BoxFit.cover,
+                                                        )))
+                                                    : Container(
+                                                        color: Colors.white,
+                                                        width: 100,
+                                                        height: 85,
+                                                        child: Center(
+                                                            child: Text(
+                                                                'no image'))),
+                                              ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Flexible(
+                                                child: SizedBox(
+                                                  height: 85.0,
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: <Widget>[
+                                                      Text(
+                                                        aboutUs[index],
+                                                        textAlign:
+                                                            TextAlign.left,
+                                                        maxLines: 3,
+                                                        overflow: TextOverflow
+                                                            .ellipsis, //TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18.0, fontFamily: 'Roboto'),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          Consumer<UserProvider>(
+                                            builder: (__, userData, ___) {
+                                              return userData.user.channels
+                                                      .contains(blogs[index])
+                                                  ? Text('Subscribed',
+                                                      style: TextStyle(
+                                                          color: logoGreen))
+                                                  : Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.end,
+                                                      children: [
+                                                        RaisedButton(
+                                                          color:
+                                                              Color(0xFF161b18),
+                                                          onPressed: () {},
+                                                          child: Text(
+                                                            'Buy Rs.10',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 10,
+                                                        ),
+                                                        RaisedButton(
+                                                          color:
+                                                              Color(0xFF161b18),
+                                                          onPressed: () {
+                                                            showAlertDialog(
+                                                                context,
+                                                                userData.user
+                                                                    .points,
+                                                                blogs[index]);
+                                                          },
+                                                          child: Text(
+                                                            'Use points',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                        )
+                                                      ],
+                                                    );
+                                            },
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            itemCount: aboutUs.length,
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            physics: ClampingScrollPhysics(),
+                            controller: _scrollController,
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  Consumer<UserProvider>(
+                    builder: (_, userData, ___) {
+                      return ListView.builder(
+                        itemCount: userData.user.channels.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return PostsList(
+                            baseurl: userData.user.channels[index],
+                          );
+                        },
+                      );
+                    },
+                  )
+                  // Container(
+                  //   height: MediaQuery.of(context).size.height,
+                  //   child: PostsList(
+                  //     baseurl: snapshot.data.data()['channel'],
+                  //   ),
+                  // )
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
+    ));
+  }
+
+  showAlertDialog(BuildContext context, int points, String channel) {
+    // set up the button
+    UserProvider _userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+    Widget okButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () async {
+        SharedPreferences _prefs = await SharedPreferences.getInstance();
+        print(channel);
+        print(points);
+        String _userStringify = _prefs.getString('usersData');
+        _userProvider.updatePoint(10, isReduce: true);
+        _userProvider.updateChannelList(channel);
+        Navigator.pop(context);
+        // print("points here:$points");
+        // print("channel here:$channel");
+        // int pointers = points - 10;
+
+        // Map<String, dynamic> data = {'points': pointers, 'channel': channel};
+        // fData.userCollection
+        //     .doc(fData.usersname.uid)
+        //     .set(data, SetOptions(merge: true))
+        //     .then((e) {
+        //   print('channel added');
+        // });
+        // await FirebasesData()
+        //     .updateUserPresence(points: points - 10, channel: channel);
+      },
+    );
+    Widget cancel = FlatButton(
+      child: Text("cancel"),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+    Widget ok = FlatButton(
+      child: Text("Ok"),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = 1000 >= 1000
+        ? AlertDialog(
+            title: Text("Subscribe"),
+            content: Text("You now have acces to this blog!!!"),
+            actions: [cancel, okButton],
+          )
+        : AlertDialog(
+            title: Text("Subscribe"),
+            content: Text("You dont have enough points!!! :("),
+            actions: [ok],
+          );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }
-
 // import 'consumable.dart';
 
 // const bool kAutoConsume = true;
@@ -73,7 +397,7 @@ class ViewAll extends StatelessWidget {
 //     DateTime noADDate;
 
 //     var fiftyDaysFromNow = currentDate.add(new Duration(days: 50));
-//     print(
+//     //
 //         '${fiftyDaysFromNow.month} - ${fiftyDaysFromNow.day} - ${fiftyDaysFromNow.year} ${fiftyDaysFromNow.hour}:${fiftyDaysFromNow.minute}');
 
 //     Stream purchaseUpdated =
@@ -346,7 +670,7 @@ class ViewAll extends StatelessWidget {
 //   }
 
 //   Future<void> consume(String id) async {
-//     print('consume id is $id');
+//     //'consume id is $id');
 //     await ConsumableStore.consume(id);
 //     final List<String> consumables = await ConsumableStore.load();
 //     setState(() {
@@ -361,7 +685,7 @@ class ViewAll extends StatelessWidget {
 //   }
 
 //   void deliverProduct(PurchaseDetails purchaseDetails) async {
-//     print('deliverProduct'); // Last
+//     //'deliverProduct'); // Last
 //     // IMPORTANT!! Always verify a purchase purchase details before delivering the product.
 //     if (purchaseDetails.productID == _kConsumableId) {
 //       await ConsumableStore.save(purchaseDetails.purchaseID);
@@ -387,17 +711,17 @@ class ViewAll extends StatelessWidget {
 //   Future<bool> _verifyPurchase(PurchaseDetails purchaseDetails) {
 //     // IMPORTANT!! Always verify a purchase before delivering the product.
 //     // For the purpose of an example, we directly return true.
-//     print('_verifyPurchase');
+//     //'_verifyPurchase');
 //     return Future<bool>.value(true);
 //   }
 
 //   void _handleInvalidPurchase(PurchaseDetails purchaseDetails) {
 //     // handle invalid purchase here if  _verifyPurchase` failed.
-//     print('_handleInvalidPurchase');
+//     //'_handleInvalidPurchase');
 //   }
 
 //   void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
-//     print('_listenToPurchaseUpdated');
+//     //'_listenToPurchaseUpdated');
 //     purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
 //       if (purchaseDetails.status == PurchaseStatus.pending) {
 //         showPendingUI();
@@ -469,7 +793,7 @@ class ViewAll extends StatelessWidget {
 //   //         isLoading = false;
 //   //         posts.addAll(_posts);
 //   //       });
-//   //     }).then((value) => print(posts));
+//   //     }).then((value) => //posts));
 //   //   }
 //   // }
 

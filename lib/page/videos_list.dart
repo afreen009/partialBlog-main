@@ -32,7 +32,7 @@ class _VideoListViewState extends State<VideoListView> {
         controller: _controller,
         showVideoProgressIndicator: true,
         onReady: () {
-          print('Player is ready.');
+          //'Player is ready.');
         },
       ),
     );

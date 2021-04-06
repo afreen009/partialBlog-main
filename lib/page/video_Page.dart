@@ -67,12 +67,12 @@ class _VideoPlayerApp3State extends State<VideoPlayerApp3>
 
   _buildVideo(videos, size) {
     for (int i = 0; i < videos.length; i++) {
-      print('video id' + videos.toString());
+      //'video id' + videos.toString());
       return Column(
         children: [
           GestureDetector(
             // onTap: () {
-            //   print(videoList.toString());
+            //   //videoList.toString());
             // },
             onTap: () => Navigator.push(
               context,
@@ -199,7 +199,7 @@ class _VideoPlayerApp3State extends State<VideoPlayerApp3>
                 primary: false,
                 itemCount: videoList.length,
                 itemBuilder: (BuildContext context, int index) {
-                  print(videoList.length);
+                  //videoList.length);
                   if (index == 0) {
                     return Container();
                   }

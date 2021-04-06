@@ -208,7 +208,7 @@ class _HomeVideosState extends State<HomeVideos> {
     // int items1 = _channel1.videos.length;
     // int items2 = _channel2.videos.length;
     // // int items3 = _channel3.videos.length;
-    // print(items);
+    // //items);
     return _channel != null
         ? NotificationListener<ScrollNotification>(
             onNotification: (ScrollNotification scrollDetails) {

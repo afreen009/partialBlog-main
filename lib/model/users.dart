@@ -1,3 +1,5 @@
+import '../firebaseservice.dart';
+
 class Users {
   final List<String> history;
   final List<BookMarks> bookmark;

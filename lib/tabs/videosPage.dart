@@ -1,296 +1,250 @@
-// import 'package:flutter/material.dart';
-// import 'package:google_signin_example/helpers/constants.dart';
-// import 'package:google_signin_example/model/channel_models.dart';
-// import 'package:google_signin_example/model/video_model.dart';
-// import 'package:google_signin_example/screens/video_screen.dart';
-// import 'package:google_signin_example/services/api_services.dart';
+// import 'package:admob_flutter/admob_flutter.dart';
+import 'package:admob_flutter/admob_flutter.dart';
+import 'package:flutter/material.dart';
+import 'package:google_signin_example/admob.dart';
+import 'package:google_signin_example/model/channel.dart';
+import 'package:google_signin_example/model/channel_models.dart';
+import 'package:google_signin_example/model/video.dart';
+import 'package:google_signin_example/model/video_model.dart';
+import 'package:google_signin_example/screens/video_screen.dart';
+import 'package:google_signin_example/services/api_services.dart';
 
-// class VideoPlayerApp extends StatefulWidget {
-//   @override
-//   _VideoPlayerAppState createState() => _VideoPlayerAppState();
-// }
+class VideoPlayerApp extends StatefulWidget {
+  @override
+  _VideoPlayerAppState createState() => _VideoPlayerAppState();
+}
 
-// //this is that code right?
-// class _VideoPlayerAppState extends State<VideoPlayerApp> {
-//   Channel _channel; //As we're just testing let let is for now
-//   bool _isLoading = false;
-//   Color primaryColor = Color(0xff18203d);
-//   Color secondaryColor = Color(0xff232c51);
-//   Color logoGreen = Color(0xff25bcbb);
-//   @override
-//   void initState() {
-//     super.initState();
-//     // _initChannel();
-//   }
-//   //
-// //done?
-//   // _initChannel() async {//O comment that code
-//   //   Channel channel = await APIService.instance
-//   //       .fetchChannel(channelId: 'UCgpDrKxkgzFYKPh1wOQuY8Q');
+class _VideoPlayerAppState extends State<VideoPlayerApp> {
+  Channel _channel;
+  AdmobInterstitial interstitialAd;
+  // AdmobReward reward;
+  bool _isLoading = false;
+  Color primaryColor = Color(0xff18203d);
+  Color secondaryColor = Color(0xff232c51);
+  Color logoGreen = Color(0xff25bcbb);
+  GlobalKey<ScaffoldState> scaffoldState = GlobalKey();
+  @override
+  void initState() {
+    super.initState();
+    _initChannel();
+    interstitialAd = AdmobInterstitial(
+      adUnitId: AdMobServices.interstitialId,
+      listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+        if (event == AdmobAdEvent.closed) interstitialAd.load();
+        handleEvent(event, args, 'Interstitial');
+      },
+    );
+    interstitialAd.load();
+    // reward = AdmobReward(
+    //     adUnitId: AdMobServices.rewardId,
+    //     listener: (event, args) {
+    //       if (event == AdmobAdEvent.rewarded) {
+    //         print("User rewarded.......");
+    //       }
+    //     });
+    // reward.load();
+  }
 
-//   //   setState(() {
-//   //     _channel = channel;
-//   //   });
-//   // }
+  _initChannel() async {
+    Channel channel = await APIService.instance
+        .fetchChannel(channelId: 'UCgpDrKxkgzFYKPh1wOQuY8Q');
 
-// //Where is the playlist code I pushed ?I jusr want to code py and that code i dint push oI unders
+    if (mounted) {
+      setState(() {
+        _channel = channel;
+      });
+    }
+  }
 
-//   // _buildProfileInfo() {
-//   //   return Container(
-//   //     margin: EdgeInsets.all(20.0),
-//   //     padding: EdgeInsets.all(20.0),
-//   //     height: 100.0,
-//   //     decoration: BoxDecoration(
-//   //       color: Colors.white,
-//   //       borderRadius: BorderRadius.all(Radius.circular(10)),
-//   //       boxShadow: [
-//   //         BoxShadow(
-//   //           color: Colors.black12,
-//   //           offset: Offset(0, 1),
-//   //           blurRadius: 6.0,
-//   //         ),
-//   //       ],
-//   //     ),
-//   //     child: Row(
-//   //       children: <Widget>[
-//   //         CircleAvatar(
-//   //           backgroundColor: Colors.white,
-//   //           radius: 35.0,
-//   //           backgroundImage: NetworkImage(_channel.profilePictureUrl),
-//   //         ),
-//   //         SizedBox(width: 12.0),
-//   //         Expanded(
-//   //           child: Column(
-//   //             mainAxisAlignment: MainAxisAlignment.center,
-//   //             crossAxisAlignment: CrossAxisAlignment.start,
-//   //             children: <Widget>[
-//   //               Text(
-//   //                 _channel.title + _channel.like,
-//   //                 style: TextStyle(
-//   //                   color: Colors.black,
-//   //                   fontSize: 20.0,
-//   //                   fontWeight: FontWeight.w600,
-//   //                 ),
-//   //                 overflow: TextOverflow.ellipsis,
-//   //               ),
-//   //               Text(
-//   //                 '${_channel.subscriberCount} subscribers',
-//   //                 style: TextStyle(
-//   //                   color: Colors.grey[600],
-//   //                   fontSize: 16.0,
-//   //                   fontWeight: FontWeight.w600,
-//   //                 ),
-//   //                 overflow: TextOverflow.ellipsis,
-//   //               ),
-//   //             ],
-//   //           ),
-//   //         )
-//   //       ],
-//   //     ),
-//   //   );
-//   // }
+  _buildVideo(Video video) {
+    return Column(
+      children: [
+        Column(
+          children: [
+            GestureDetector(
+              onTap: () async {
+                if (await interstitialAd.isLoaded) {
+                  interstitialAd.show();
+                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => VideoScreen(id: video.id),
+                  ),
+                );
+              },
+              child: Container(
+                height: 200,
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      offset: Offset(0, 1),
+                      blurRadius: 6.0,
+                    ),
+                  ],
+                ),
+                child: Image(
+                  image: NetworkImage(
+                    video.thumbnailUrl,
+                  ),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Container(
+              height: 45,
+              width: double.infinity,
+              // decoration: BoxDecoration(
+              //     borderRadius: BorderRadius.only(
+              //         bottomRight: Radius.circular(10),
+              //         bottomLeft: Radius.circular(10)),
+              //     color: Colors.grey),
+              child: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Colors.white,
+                      radius: 20.0,
+                      backgroundImage: NetworkImage(_channel.profilePictureUrl),
+                    ),
+                    Expanded(child: Text('  ' + video.title)),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 15,
+            )
+          ],
+        ),
+      ],
+    );
+  }
 
-//   _buildVideo(Video video) {
-//     return Column(
-//       children: [
-//         GestureDetector(
-//           onTap: () => Navigator.push(
-//             context,
-//             MaterialPageRoute(
-//               builder: (_) => VideoScreen(id: video.id),
-//             ),
-//           ),
-//           child: Container(
-//             width: MediaQuery.of(context).size.width,
-//             decoration: BoxDecoration(
-//               color: Colors.white,
-//               borderRadius: BorderRadius.all(Radius.circular(15)),
-//               boxShadow: [
-//                 BoxShadow(
-//                   color: Colors.black12,
-//                   offset: Offset(0, 1),
-//                   blurRadius: 6.0,
-//                 ),
-//               ],
-//             ),
-//             child: Image(image: NetworkImage(video.thumbnailUrl)),
-//           ),
-//         ),
-//         Container(
-//           height: 45,
-//           width: double.infinity,
-//           // decoration: BoxDecoration(
-//           //     borderRadius: BorderRadius.only(
-//           //         bottomRight: Radius.circular(10),
-//           //         bottomLeft: Radius.circular(10)),
-//           //     color: Colors.grey),
-//           child: Padding(
-//             padding: EdgeInsets.all(8.0),
-//             child: Row(
-//               children: [
-//                 CircleAvatar(
-//                   backgroundColor: Colors.white,
-//                   radius: 20.0,
-//                   backgroundImage: NetworkImage(video.thumbnailUrl),
-//                 ),
-//                 Expanded(child: Text('  ' + video.title)),
-//               ],
-//             ),
-//           ),
-//         ),
-//         SizedBox(
-//           height: 15,
-//         )
-//       ],
-//     );
-//   }
+  void handleEvent(
+      AdmobAdEvent event, Map<String, dynamic> args, String adType) {
+    switch (event) {
+      case AdmobAdEvent.loaded:
+        showSnackBar('New Admob $adType Ad loaded!');
+        break;
+      case AdmobAdEvent.opened:
+        showSnackBar('Admob $adType Ad opened!');
+        break;
+      case AdmobAdEvent.closed:
+        showSnackBar('Admob $adType Ad closed!');
+        break;
+      case AdmobAdEvent.failedToLoad:
+        showSnackBar('Admob $adType failed to load. :(');
+        break;
+      case AdmobAdEvent.rewarded:
+        showDialog(
+          context: scaffoldState.currentContext,
+          builder: (BuildContext context) {
+            return WillPopScope(
+              child: AlertDialog(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text('Reward callback fired. Thanks Andrew!'),
+                    Text('Type: ${args['type']}'),
+                    Text('Amount: ${args['amount']}'),
+                  ],
+                ),
+              ),
+              onWillPop: () async {
+                scaffoldState.currentState.hideCurrentSnackBar();
+                return true;
+              },
+            );
+          },
+        );
+        break;
+      default:
+    }
+  }
 
-//   // _loadMoreVideos() async {
-//   //   _isLoading = true;
-//   //   List<Video> moreVideos = await APIService.instance
-//   //       .fetchVideosFromPlaylist(playlistId: _channel.uploadPlaylistId);
-//   //   List<Video> allVideos = _channel.videos..addAll(moreVideos);
-//   //   setState(() {
-//   //     _channel.videos = allVideos;
-//   //   });
-//   //   _isLoading = false;
-//   // }
-//   //Re run and test it
-// //COmment
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: (1 != 2)
-//           ? SingleChildScrollView(
-//               child: Column(
-//                 children: [
-//                   //Stil; the same problem let go to yours
+  void showSnackBar(String content) {
+    scaffoldState.currentState.showSnackBar(
+      SnackBar(
+        content: Text(content),
+        duration: Duration(milliseconds: 1500),
+      ),
+    );
+  }
 
-//                   Container(
-//                     child: StreamBuilder<List<Channel>>(
-//                       stream: APIService.instance.getListOfChannels(
-//                           channelListID: CHANNEL_ID_LIST_PART_1),
-//                       builder: (context, snapshot) {
-//                         print(snapshot.data);
-//                         if (snapshot.hasData) {
-//                           List<Video> _totalVideo = [];
-//                           snapshot.data.forEach((channel) {
-//                             channel.videos
-//                                 .forEach((video) => _totalVideo.add(video));
-//                           });
-//                           return Column(
-//                             children: _totalVideo
-//                                 .map((video) => _buildVideo(video))
-//                                 .toList(),
-//                           );
-//                         } else if (snapshot.connectionState ==
-//                                 ConnectionState.active ||
-//                             snapshot.connectionState ==
-//                                 ConnectionState.waiting) {
-//                           return Center(
-//                             child: CircularProgressIndicator(),
-//                           );
-//                         }
-//                         return Center(
-//                           child: Column(
-//                             mainAxisAlignment: MainAxisAlignment.center,
-//                             children: [
-//                               Text('Be sure your internet is fine and retry'),
-//                               FlatButton(
-//                                 color: Colors.grey[400],
-//                                 child: Text(
-//                                   'Retry again',
-//                                 ),
-//                                 onPressed: () => this.setState(() {}),
-//                               )
-//                             ],
-//                           ),
-//                         );
-//                       },
-//                     ),
-//                   ),
-//                   Container(
-//                     child: StreamBuilder<List<Channel>>(
-//                       stream: APIService.instance.getListOfChannels(
-//                           channelListID: CHANNEL_ID_LIST_PART_2),
-//                       builder: (context, snapshot) {
-//                         print(snapshot.data);
-//                         if (snapshot.hasData) {
-//                           List<Video> _totalVideo = [];
-//                           snapshot.data.forEach((channel) {
-//                             channel.videos
-//                                 .forEach((video) => _totalVideo.add(video));
-//                           });
-//                           return Column(
-//                             children: _totalVideo
-//                                 .map((video) => _buildVideo(video))
-//                                 .toList(),
-//                           );
-//                         } else if (snapshot.connectionState ==
-//                                 ConnectionState.active ||
-//                             snapshot.connectionState ==
-//                                 ConnectionState.waiting) {
-//                           return Center(
-//                             child: CircularProgressIndicator(),
-//                           );
-//                         }
-//                         return Center(
-//                           child: Column(
-//                             mainAxisAlignment: MainAxisAlignment.center,
-//                             children: [
-//                               Text('Be sure your internet is fine and retry'),
-//                               FlatButton(
-//                                 color: Colors.grey[400],
-//                                 child: Text(
-//                                   'Retry again',
-//                                 ),
-//                                 onPressed: () => this.setState(() {}),
-//                               )
-//                             ],
-//                           ),
-//                         );
-//                       },
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             )
-// //It alradey one
-//           //Ready to try
-//           //Anyways that part after the :  won't be trigger at all
-//           : _channel != null
-//               ? NotificationListener<ScrollNotification>(
-//                   onNotification: (ScrollNotification scrollDetails) {
-//                     if (!_isLoading &&
-//                         _channel.videos.length !=
-//                             int.parse(_channel.videoCount) &&
-//                         scrollDetails.metrics.pixels ==
-//                             scrollDetails.metrics.maxScrollExtent) {
-//                       // _loadMoreVideos();
-//                     }
-//                     return false;
-//                   },
-//                   child: Padding(
-//                     padding: const EdgeInsets.only(top: 8.0),
-//                     child: ListView.builder(
-//                       itemCount: 1 + _channel.videos.length,
-//                       itemBuilder: (BuildContext context, int index) {
-//                         if (index == 0) {
-//                           return Container();
-//                         }
-//                         Video video = _channel.videos[index - 1];
-//                         return _buildVideo(video);
-//                       },
-//                     ),
-//                   ),
-//                 )
-//               : Center(
-//                   child: CircularProgressIndicator(
-//                     valueColor: AlwaysStoppedAnimation<Color>(
-//                       Theme.of(context).primaryColor, // Red
-//                     ),
-//                   ),
-//                 ),
-//     );
-//   }
-// }
+  _loadMoreVideos() async {
+    _isLoading = true;
+    List<Video> moreVideos = await APIService.instance
+        .fetchVideosFromPlaylist(playlistId: _channel.uploadPlaylistId);
+    List<Video> allVideos = _channel.videos..addAll(moreVideos);
+
+    setState(() {
+      _channel.videos = allVideos;
+    });
+    _isLoading = false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // int items = _channel.videos.length;
+    // int items1 = _channel1.videos.length;
+    // int items2 = _channel2.videos.length;
+    // // int items3 = _channel3.videos.length;
+    // //items);
+    return Scaffold(
+      body: _channel != null
+          ? NotificationListener<ScrollNotification>(
+              onNotification: (ScrollNotification scrollDetails) {
+                if (!_isLoading &&
+                    _channel.videos.length != int.parse(_channel.videoCount) &&
+                    // _channel2.videos.length !=
+                    //     int.parse(_channel2.videoCount) &&
+                    // _channel3.videos.length !=
+                    //     int.parse(_channel3.videoCount) &&
+                    scrollDetails.metrics.pixels ==
+                        scrollDetails.metrics.maxScrollExtent) {
+                  _loadMoreVideos();
+                }
+                return false;
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: ListView.builder(
+                  itemCount: _channel.videos.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    // if (index % 3 == 0 && index != 0) {
+                    //   return AdmobBanner(
+                    //       adUnitId: AdMobServices.bannerId,
+                    //       adSize: AdmobBannerSize.LARGE_BANNER);
+                    // }
+                    if (index == 0) {
+                      return Container();
+                    }
+                    Video videos = _channel.videos[index - 1];
+                    return _buildVideo(videos);
+                  },
+                ),
+              ),
+            )
+          : Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Theme.of(context).primaryColor, // Red
+                ),
+              ),
+            ),
+    );
+  }
+
+  @override
+  void dispose() {
+    interstitialAd?.dispose();
+    // reward?.dispose();
+    super.dispose();
+  }
+}
