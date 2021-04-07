@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:google_signin_example/states/current_user.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class FirebasesData {
   /// The main Firestore user collection
@@ -24,16 +22,12 @@ class FirebasesData {
     return false;
   }
 
-  createOrUpdateUserData(UserData userData, String userId) async {
-    // String uid = userId == null ? usersname.uid : userId;
-    // print("userid${usersname.uid}");
-    print("userid$userId");
-
+  Future<void> createOrUpdateUserData(UserData userData) async {
     try {
       await this
           ._instance
           .collection('users')
-          .doc(userId)
+          .doc(userData.userId)
           .set(userData.toJson());
     } catch (e) {
       throw Exception(e.toString());
@@ -71,9 +65,7 @@ class FirebasesData {
   Future<DocumentSnapshot> retrieveUser(String userId) async {
     // return await databaseReference.child
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String userids = prefs.get('userId');
-      DocumentSnapshot _doc = await this._instance.doc("users/$userids").get();
+      DocumentSnapshot _doc = await this._instance.doc("users/$userId").get();
       if (_doc.exists) {
         return _doc;
       }

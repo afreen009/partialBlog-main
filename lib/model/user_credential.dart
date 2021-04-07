@@ -17,12 +17,17 @@ class UserCredentials {
 
   UserCredentials.fromJson(Map<String, String> data) {
     this.name = data["name"];
+    this.userId = data["userId"];
     this.pictureUrl = data['pictureUrl'];
     this.email = data['email'];
   }
 
-  Map<String, String> toJson() =>
-      {"name": this.name, "pictureUrl": this.pictureUrl, "email": this.email};
+  Map<String, String> toJson() => {
+        "name": this.name,
+        "userId": this.userId,
+        "pictureUrl": this.pictureUrl,
+        "email": this.email
+      };
 
   @override
   String toString() {
