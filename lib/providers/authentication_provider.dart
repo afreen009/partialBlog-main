@@ -50,6 +50,7 @@ class AuthenticationProvider extends ChangeNotifier {
       if (gAuth.user != null) {
         //Here we give default value to the user once not data is yet stored
         await _saveUser(gAuth);
+        print((await _prefs).getString('user_data'));
       }
     } catch (e) {
       throw Exception(e.toString());

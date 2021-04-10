@@ -14,7 +14,8 @@ class UserProvider extends ChangeNotifier {
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
-  UserProvider() {
+  UserProvider(UserData userData) {
+    this._userData = userData;
     this._init();
   }
 
@@ -57,6 +58,8 @@ class UserProvider extends ChangeNotifier {
                   //No need to fetch data from the store data are store in cache memory
                   this._userData = UserData.fromJson(Map.castFrom(
                       json.decode((await _prefs).get('user_data')))),
+
+                  print((await _prefs).getString('user_data')),
                   //Notify
                   notifyListeners()
                 }

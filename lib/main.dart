@@ -7,6 +7,7 @@ import 'package:google_signin_example/page/home.dart';
 import 'package:google_signin_example/page/welcome.dart';
 import 'package:google_signin_example/providers/authentication_provider.dart';
 import 'package:google_signin_example/providers/user_provder.dart';
+import 'package:google_signin_example/states/current_user.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'services/theme_changer.dart';
@@ -51,7 +52,13 @@ class _MyAppState extends State<MyApp> {
           create: (_) => AuthenticationProvider(),
         ),
         ChangeNotifierProvider<UserProvider>(
-          create: (_) => UserProvider(),
+          create: (_) => UserProvider(UserData(
+              email: '',
+              points: 0,
+              name: '',
+              channels: [],
+              userId: '',
+              pictureUrl: '')),
         )
       ],
       child: Builder(builder: (context) {
