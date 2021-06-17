@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_signin_example/providers/authentication_provider.dart';
 import 'package:google_signin_example/widget/signin.dart';
 import 'package:provider/provider.dart';
 // import 'package:flutter_facebook_login/flutter_facebook_login.dart';
-import 'package:http/http.dart' as http;
 
 class FacebookButton extends StatefulWidget {
   @override
@@ -13,7 +14,8 @@ class FacebookButton extends StatefulWidget {
 }
 
 class _FacebookButtonState extends State<FacebookButton> {
-  // static final FacebookLogin facebookSignIn = new FacebookLogin();
+  static final FacebookLogin facebookSignIn = new FacebookLogin();
+  // final facebookLogin = FacebookLogin();
   @override
   Widget build(BuildContext context) => Container(
         padding: EdgeInsets.all(4),
@@ -32,37 +34,35 @@ class _FacebookButtonState extends State<FacebookButton> {
           textColor: Colors.black,
           icon: FaIcon(FontAwesomeIcons.facebook, color: Colors.blueGrey),
           onPressed: () async {
-            //     final FacebookLoginResult result =
-            //         await facebookSignIn.logIn(['email']);
-
-            //     switch (result.status) {
-            //       case FacebookLoginStatus.loggedIn:
-            //         final FacebookAccessToken accessToken = result.accessToken;
-            //         final graphResponse = await http.get(
-            //             'https://graph.facebook.com/v2.12/me?fields=first_name,picture&access_token=${accessToken.token}');
-            //         final profile = jsonDecode(graphResponse.body);
-            //         print(profile);
-            //         print(profile['first_name']);
-            //         setState(() {});
-            //         print('''
-            //  Logged in!
-
-            //  Token: ${accessToken.token}
-            //  User id: ${accessToken.userId}
-            //  Expires: ${accessToken.expires}
-            //  Permissions: ${accessToken.permissions}
-            //  Declined permissions: ${accessToken.declinedPermissions}
-            //  ''');
-            //         break;
-            //       case FacebookLoginStatus.cancelledByUser:
-            //         print('Login cancelled by the user.');
-            //         break;
-            //       case FacebookLoginStatus.error:
-            //         print('Something went wrong with the login process.\n'
-            //             'Here\'s the error Facebook gave us: ${result.errorMessage}');
-            //         break;
-            // }
+            await Provider.of<AuthenticationProvider>(context, listen: false)
+                .signInWithFacebook();
           },
         ),
       );
 }
+// onFBLogin() async {
+//     final result = await facebookLogin.logIn(['email']);
+//     switch (result.status) {
+//       case FacebookLoginStatus.loggedIn:
+//         final token = result.accessToken;
+//         final response = await http.get(
+//             "https://graph.facebook.com/v2.12/me?fields=name,picture,email&access_token=$token");
+//         final data1 = json.decode(response.body);
+//         print(data);
+//         setState(() {
+//           _isLogin = true;
+//           data = data1;
+//         });
+//         break;
+//       case FacebookLoginStatus.cancelledByUser:
+//         setState(() {
+//           _isLogin = false;
+//         });
+//         break;
+//       case FacebookLoginStatus.error:
+//         setState(() {
+//           _isLogin = false;
+//         });
+//         break;
+//     }
+// }

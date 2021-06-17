@@ -34,32 +34,33 @@ class _HomeVideoState extends State<HomeVideo> {
   Color logoGreen = Color(0xff25bcbb);
   List<DbModel> db;
   List finalDblist = [];
+
   // final FirebaseServices firebaseService = FirebaseServices.instance;
   List<PostEntity> posts = List<PostEntity>();
   int page = 0;
   bool isLoading = false;
   GlobalKey<ScaffoldState> scaffoldState = GlobalKey();
-  AdmobBannerSize bannerSize;
-  AdmobInterstitial interstitial;
+  // AdmobBannerSize bannerSize;
+  // AdmobInterstitial interstitial;
   AdmobBannerController controller;
   bool _loaded = false;
   @override
   void initState() {
     getStatus();
     getData();
-    bannerSize = AdmobBannerSize.BANNER;
+    // bannerSize = AdmobBannerSize.BANNER;
     _initChannel();
     Timer.periodic(Duration(seconds: 5), (timer) {
       getStatus();
     });
-    interstitial = AdmobInterstitial(
-      adUnitId: AdMobServices.interstitialId,
-      listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-        if (event == AdmobAdEvent.closed) interstitial.load();
-        handleEvent(event, args, 'Interstitial');
-      },
-    );
-    interstitial.load();
+    // interstitial = AdmobInterstitial(
+    //   adUnitId: AdMobServices.interstitialId,
+    //   listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+    //     if (event == AdmobAdEvent.closed) interstitial.load();
+    //     handleEvent(event, args, 'Interstitial');
+    //   },
+    // );
+    // interstitial.load();
     super.initState();
   }
 
@@ -194,9 +195,9 @@ class _HomeVideoState extends State<HomeVideo> {
       child: GestureDetector(
         onTap: () async {
           setState(() => _loaded = false);
-          if (await interstitial.isLoaded) {
-            interstitial.show();
-          }
+          // if (await interstitial.isLoaded) {
+          //   interstitial.show();
+          // }
           print("tapped");
           await PersonDatabaseProvider.db.addPersonToDatabase(DbModel(
             name: video.title,
@@ -213,8 +214,8 @@ class _HomeVideoState extends State<HomeVideo> {
         },
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.blueGrey[100],
+            borderRadius: BorderRadius.circular(5),
+            // color: Colors.blueGrey[100],
           ),
           padding: EdgeInsets.all(5),
           child: Row(
@@ -223,7 +224,7 @@ class _HomeVideoState extends State<HomeVideo> {
                 width: 140,
                 height: 85,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(5),
                   // color: Colors.white,
                   image: new DecorationImage(
                     image: new NetworkImage(video.thumbnailUrl),
@@ -458,11 +459,11 @@ class _HomeVideoState extends State<HomeVideo> {
                 if (index == 0) {
                   return Container();
                 }
-                Video videos = index <= 7 ? _channel.videos[index - 1] : null;
-                print("videos:" + _channel.videos.length.toString());
+                // Video videos = index <= 7 ? _channel.videos[index - 1] : null;
+                // print("videos:" + _channel.videos.length.toString());
                 return Column(
                   children: [
-                    index <= 7 ? _buildVideo(videos, _channel) : Container(),
+                    // index <= 7 ? _buildVideo(videos, _channel) : Container(),
                     widget.searchList.isEmpty
                         ? Container()
                         : finalDblist.contains(widget.searchList[index].title)
@@ -502,7 +503,6 @@ class _HomeVideoState extends State<HomeVideo> {
 
   @override
   void dispose() {
-    interstitial?.dispose();
     // reward?.dispose();
     super.dispose();
   }

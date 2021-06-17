@@ -47,6 +47,7 @@ class APIService {
 
   Future<List<Video>> fetchVideosFromPlaylist({String playlistId}) async {
     Map<String, String> parameters;
+    print("pagetoken:$_nextPageToken");
     if (_nextPageToken.isNotEmpty) {
       parameters = {
         'part': 'snippet',

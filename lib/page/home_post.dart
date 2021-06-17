@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+// import 'package:flutter_native_admob/flutter_native_admob.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_signin_example/database/databasehelep.dart';
 import 'package:google_signin_example/database/db_model.dart';
-import 'package:google_signin_example/firebaseservice.dart';
 import 'package:google_signin_example/model/users.dart';
 import 'package:google_signin_example/page/post_details.dart';
 import 'package:google_signin_example/page/sharing_post.dart';
@@ -36,12 +36,6 @@ class _HomePostState extends State<HomePost> {
   final shareData = SharingPost();
   // final FirebaseServices firebaseService = FirebaseServices.instance;
   List<DbModel> db;
-  @override
-  void initState() {
-    getStatus();
-    // TODO: implement initState
-    super.initState();
-  }
 
   void _select(String choice) {
     setState(() {

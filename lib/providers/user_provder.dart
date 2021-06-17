@@ -13,7 +13,8 @@ class UserProvider extends ChangeNotifier {
   FirebasesData _firebasesData = FirebasesData.instance;
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-
+  var data;
+  var check;
   UserProvider(UserData userData) {
     this._userData = userData;
     this._init();
@@ -24,45 +25,73 @@ class UserProvider extends ChangeNotifier {
   // Update user channel list
   updateChannelList(String channel) async {
     if (channel.isNotEmpty) {
-      if ((await _prefs).containsKey('user_data')) {
-        this._userData.channels.add(channel); //Update channel
-        await _firebasesData.createOrUpdateUserData(this._userData);
-        (await _prefs).setString(
-            'user_data', this._userData.toString()); //Update in cache
-        //Notify listeners
-        notifyListeners();
-      }
-    }
-  }
-
-  //Update point
-  updatePoint(int points, {bool isReduce: false}) async {
-    if ((await _prefs).containsKey('user_data')) {
-      !isReduce ? _userData.points += points : _userData.points -= points;
+      this._userData.channels.add(channel); //Update channel
       await _firebasesData.createOrUpdateUserData(this._userData);
-      (await _prefs)
-          .setString('user_data', this._userData.toString()); //Update in cache
       //Notify listeners
       notifyListeners();
     }
   }
 
+//Update point
+  Future updatePoint(int points, {bool isReduce: false}) async {
+    print("userData$_userData");
+    !isReduce ? _userData.points += points : _userData.points -= points;
+    _userData.userId = this._userData.userId;
+    _userData.email = this._userData.email;
+    await _firebasesData
+        .createOrUpdateUserData(this._userData); //Update in cache
+    //Notify listeners
+    notifyListeners();
+  }
+  // //Update point
+  // updatePoint(int points, {bool isReduce: false}) async {
+  //   if ((await _prefs).containsKey('user_data')) {
+  //     !isReduce ? _userData.points += points : _userData.points -= points;
+  //     print(this._userData);
+  //     String ud = (await _prefs).getString('user_data');
+  //     print((await _prefs).getString('user_data'));
+  //     if (this._userData.userId == "") {
+  //       (await _prefs).setString('user_data', ud.toString());
+  //       await _firebasesData.createOrUpdateUserData(this._userData);
+  //       //TODO
+  //     } else {
+  //       (await _prefs).setString(
+  //           'user_data', this._userData.toString()); //Update in cache
+  //       await _firebasesData.createOrUpdateUserData(this._userData);
+  //     }
+
+  //     //Notify listeners
+  //     notifyListeners();
+  //   }
+  // }
+
 // Fetch data of user
-  void _init() {
+  Future<void> _init() async {
+    print("it was here");
+    print(_userData);
+
+    // final user = FirebaseAuth.instance.currentUser;
     _firebaseAuth.authStateChanges().listen((_user) async => {
+          {print(_user)},
           if (_user != null)
             //Once user already exist then his data are store in cache
             {
-              if ((await _prefs).containsKey('user_data'))
-                {
-                  //No need to fetch data from the store data are store in cache memory
-                  this._userData = UserData.fromJson(Map.castFrom(
-                      json.decode((await _prefs).get('user_data')))),
-
-                  print((await _prefs).getString('user_data')),
-                  //Notify
-                  notifyListeners()
-                }
+              this.data =
+                  await this._firebasesData.retrieveUsersData(_user.uid),
+              this.check = await this._firebasesData.retrieveUser(_user.uid),
+              {print("insider inside")},
+              //No need to fetch data from the store data are store in cache memory
+              this._userData = UserData(
+                  email: _user.email,
+                  name: _user.displayName,
+                  userId: _user.uid,
+                  pictureUrl: _user.uid,
+                  channels: check ? data['channel'] : [],
+                  points: check ? data['points'] : 0),
+              print("the data here:${this._userData}"),
+              await this._firebasesData.createOrUpdateUserData(_userData),
+              //Notify
+              notifyListeners()
             }
         });
   }

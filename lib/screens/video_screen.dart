@@ -20,8 +20,9 @@ class _VideoScreenState extends State<VideoScreen> {
   YoutubePlayerController _controller;
   bool _isPlayerReady;
   FirebasesData fData = FirebasesData.instance;
+
   void initState() {
-    Future.delayed(Duration(seconds: 3), () => reward(context));
+    Future.delayed(Duration(seconds: 30), () => reward(context));
     super.initState();
     _isPlayerReady = false;
     _controller = YoutubePlayerController(

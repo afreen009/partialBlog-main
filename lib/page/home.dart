@@ -2,26 +2,20 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_signin_example/database.dart';
+import 'package:google_signin_example/globals.dart' as global;
 import 'package:google_signin_example/model/post_entity.dart';
 import 'package:google_signin_example/network/wp_api.dart';
 import 'package:google_signin_example/page/article.dart';
 import 'package:google_signin_example/page/edit_profile.dart';
-import 'package:google_signin_example/page/explore_page.dart';
 import 'package:google_signin_example/page/post_details.dart';
 import 'package:google_signin_example/page/view_all.dart';
+import 'package:google_signin_example/providers/user_provder.dart';
 import 'package:google_signin_example/services/appbar.dart';
 import 'package:google_signin_example/widget/config.dart';
-import 'package:google_signin_example/widget/login.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
-import '../services/theme_changer.dart';
-import '../tabs/article_tab.dart';
-import 'all_videos.dart';
-import 'channel_list.dart';
-import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 
 const String testDevice = '';
 
@@ -42,6 +36,7 @@ class _HomePageState extends State<HomePage> {
     filteredNames = List();
     _filter = TextEditingController();
   }
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   Dio dio;
   String _searchText;
   List names;
@@ -53,23 +48,22 @@ class _HomePageState extends State<HomePage> {
   // Icon _searchIcon =  Icon(Icons.search);
   FirebaseAuth auth = FirebaseAuth.instance;
   int currentIndex;
-  bool _switchValue = false;
   Color primaryColor = Color(0xff18203d);
   Color secondaryColor = Color(0xff232c51);
   Color logoGreen = Color(0xff25bcbb);
-  Widget _appBarTitle = Text(
-    'Genius',
-  );
+
   String string;
   bool search = false;
   List<PostEntity> data = List<PostEntity>();
-  List<PostEntity> posts = List<PostEntity>();
-  List tempList = List();
+  List tempList = [];
   final user = FirebaseAuth.instance.currentUser;
-
+  Widget _appBarTitle;
+  String messageTitle = "Empty";
+  String notificationAlert = "alert";
+  static final String oneSignalAppId = 'fa29c813-75c7-4503-85e8-37ae3e3d807e';
   @override
   void initState() {
-    super.initState();
+    initPlatformState();
 
     currentIndex = 0;
     appbar = AppBarSearch(
@@ -77,6 +71,19 @@ class _HomePageState extends State<HomePage> {
       controller: _filter,
     );
 
+    _appBarTitle = Consumer<UserProvider>(
+      builder: (context, userData, child) {
+        return Text("Zalpha- The Genius App",
+            style:
+                TextStyle(fontWeight: FontWeight.bold, fontSize: 18, shadows: [
+              BoxShadow(
+                color: Color.fromRGBO(0, 0, 0, 0.15),
+                offset: Offset(0, 5),
+                blurRadius: 10.0,
+              )
+            ]));
+      },
+    );
     _getNames();
 
     _filter.addListener(() {
@@ -88,6 +95,7 @@ class _HomePageState extends State<HomePage> {
       }
       setState(() {});
     });
+    super.initState();
   }
 
   changePage(int index) {
@@ -103,10 +111,10 @@ class _HomePageState extends State<HomePage> {
   );
 
   List<String> url = [
-    'https://enginejunkies.com/',
-    'http://festivalsofearth.com/',
-    'http://insuranceofearth.com/',
-    'https://bookworms99.com/'
+    'https://physicalandmentalhealth.in/',
+    'https://gamesandapps.in/',
+    'https://managemywealth.in/',
+    'https://majorworldevents.com/',
   ];
 
   // We have to override the default TextController constructor for the state so that it listens for wether there is text in the search bar, and if there is, set the _searchText String to the TExtController input so we can filter the list accordingly.
@@ -114,9 +122,15 @@ class _HomePageState extends State<HomePage> {
     // await FirebasesData()
     //     .createUserData(userName: user.displayName, points: 0, channel: '');
     print("burda:${user.displayName}");
+    print((await _prefs).getString('user_data'));
+    (await _prefs).setString('email', user.email);
+    (await _prefs).setString('profile', user.photoURL);
+    (await _prefs).setString('name', user.displayName);
     for (int i = 0; i < url.length; i++) {
-      WpApi.getPostsList(category: FEATURED_CATEGORY_ID, baseurl: url[i])
-          .then((_posts) {
+      WpApi.getPostsList(
+        category: FEATURED_CATEGORY_ID,
+        baseurl: url[i],
+      ).then((_posts) {
         setState(() {
           comeon.addAll(_posts);
           for (int j = 0; j < comeon.length; j++) {
@@ -128,7 +142,6 @@ class _HomePageState extends State<HomePage> {
         });
       });
     }
-
     print("templist$tempList");
     names = tempList;
     filteredNames = names;
@@ -137,6 +150,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print("user.photourl ${user.photoURL}?type=square");
+
     return Scaffold(
       // resizeToAvoidBottomPadding: false,
       appBar: AppBar(
@@ -220,7 +235,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-        // backgroundColor: Colors.white,
+        backgroundColor: Colors.white,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       // bottomNavigationBar: BubbleBottomBar(
@@ -303,18 +318,18 @@ class _HomePageState extends State<HomePage> {
               index: currentIndex,
               children: <Widget>[
                 Articles(comeon),
-                ArticleTab(),
-                ViewAll(
-                    // baseurl: [
-                    //   'https://Slasherhub.com/',
-                    //   'http://Gosportx.com/',
-                    //   'http://Gotrekx.com/',
-                    //   'https://Gossipwheel.com/',
-                    //   'https://Trendznet.com/'
-                    // ],
-                    // option: 'explore',
-                    ),
-                VideoTab(),
+                // ArticleTab(),
+                // ViewAll(
+                //     // baseurl: [
+                //     //   'https://Slasherhub.com/',
+                //     //   'http://Gosportx.com/',
+                //     //   'http://Gotrekx.com/',
+                //     //   'https://Gossipwheel.com/',
+                //     //   'https://Trendznet.com/'
+                //     // ],
+                //     // option: 'explore',
+                //     ),
+                // VideoTab(),
                 EditProfilePage(),
                 // SettingsUI()
               ],
@@ -325,9 +340,10 @@ class _HomePageState extends State<HomePage> {
 
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
+        elevation: 10,
         // backgroundColor: Color(0xFF161b18),
-        // unselectedItemColor: Colors.white,
-        // selectedItemColor: logoGreen,
+        // unselectedItemColor: Color(0xFF161b18),
+        selectedItemColor: logoGreen,
         currentIndex: currentIndex,
         onTap: (index) {
           setState(() {
@@ -338,38 +354,61 @@ class _HomePageState extends State<HomePage> {
         showUnselectedLabels: false,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home_outlined,
-              size: 30,
+            icon: Container(
+              height: 30,
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  // color: Colors.white10,
+                  border: Border.all(color: Colors.white60)),
+              child: Center(
+                child: Icon(
+                  Icons.home_outlined,
+                  // size: 30,
+                ),
+              ),
             ),
             label: '',
           ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(
+          //     Icons.article_outlined,
+          //     size: 30,
+          //   ),
+          //   label: '',
+          // ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(
+          //     FontAwesomeIcons.search,
+          //     size: 0,
+          //     // color: Colors.white,
+          //   ),
+          //   label: '',
+          // ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(
+          //     Icons.videocam_outlined,
+          //     size: 30,
+          //   ),
+          //   label: '',
+          // ),
           BottomNavigationBarItem(
-            icon: Icon(
-              Icons.article_outlined,
-              size: 30,
-            ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              FontAwesomeIcons.search,
-              size: 0,
-              // color: Colors.white,
-            ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.videocam_outlined,
-              size: 30,
-            ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.person_outline,
-              size: 30,
+            // icon: CircleAvatar(
+            //   child: ImageIcon(
+            //     NetworkImage(user.photoURL.toString()),
+            //     size: 50,
+            //   ),
+            // ),
+            icon: Container(
+              height: 30,
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white60)),
+              child: Center(
+                child: Icon(
+                  Icons.person_outline,
+                  // size: 30,
+                ),
+              ),
             ),
             label: '',
           ),
@@ -468,12 +507,39 @@ class _HomePageState extends State<HomePage> {
         this._searchIcon = Icon(
           Icons.search,
         );
-        this._appBarTitle = Text(
-          'Genius',
+        this._appBarTitle = _appBarTitle = Consumer<UserProvider>(
+          builder: (context, userData, child) {
+            return Text("Zalpha - The Genius App",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    shadows: [
+                      BoxShadow(
+                        color: Color.fromRGBO(0, 0, 0, 0.15),
+                        offset: Offset(0, 5),
+                        blurRadius: 10.0,
+                      )
+                    ]));
+          },
         );
         filteredNames = names;
         _filter.clear();
       }
+    });
+  }
+
+  void initPlatformState() {
+    OneSignal.shared.init(oneSignalAppId);
+    OneSignal.shared
+        .setInFocusDisplayType(OSNotificationDisplayType.notification);
+    OneSignal.shared.setNotificationOpenedHandler((openedResult) {
+      var data = openedResult.notification.payload.additionalData;
+
+      print('[notification_service - _handleNotificationOpened()');
+      print(
+          "Opened notification: ${openedResult.notification.jsonRepresentation().replaceAll("\\n", "\n")}");
+      global.appNavigator.currentState
+          .push(MaterialPageRoute(builder: (context) => HomePage()));
     });
   }
 }

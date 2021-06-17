@@ -1,7 +1,10 @@
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_signin_example/database.dart';
+import 'package:google_signin_example/model/mypoints.dart';
 import 'package:google_signin_example/providers/user_provder.dart';
 import 'package:google_signin_example/states/current_user.dart';
 import 'package:google_signin_example/widget/post_list_item.dart';
@@ -10,32 +13,114 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
-class ViewAll extends StatelessWidget {
+import '../admob.dart';
+
+class ViewAll extends StatefulWidget {
+  @override
+  _ViewAllState createState() => _ViewAllState();
+}
+
+class _ViewAllState extends State<ViewAll> {
   FirebasesData fData = FirebasesData.instance;
+
   Color logoGreen = Color(0xff25bcbb);
+  AdmobReward reward;
   ScrollController _scrollController = new ScrollController();
+
   List aboutUs = [
-    'About Slasherhub And Its Approach to Digital Marketing Around Learning & Growing With our Users',
-    'Welcome to gosportx.com , Your best resource of finding all the sports related detais. Our team is very much dedicated to provide you the best of the important content',
-    'GoTrekx',
-    'GossipWheel',
-    'Welcome to trendznet.com, your number one source for all celebrities details. We’re dedicated to providing you the very best of content.'
+    'Engine Junkies is a one-stop website for all Automobile lovers. It also serves as an ‘Information Bank’ which contains data on a lot of cars – across multiple companies and brands.',
+    'Greatness of Culture lies in its Festivals food year new carnival venice comment festival',
+    'Secure yourself against losses – insurance health read adminuday posted car travel comments',
+    'read young admin comments best books general book',
   ];
+
   List image = [
-    'assets/idea.png',
-    'assets/gosport.png',
-    'assets/genius.png',
-    'assets/cars.png',
-    'assets/trendsTv.png'
+    'assets/images/bookworms99.png',
+    'assets/images/enginejunkies.png',
+    'assets/images/festivalsofearth.png',
+    'assets/images/insuranceofearth.png',
   ];
+
   List blogs = [
-    'http://slasherhub.com/',
-    'http://gosportx.com/',
-    'http://gotrek.com/',
-    'http://gossipwheel.com/',
-    'http://trendznet.com/',
+    'https://enginejunkies.com/',
+    'http://festivalsofearth.com/',
+    'http://insuranceofearth.com/',
+    'http://bookworms99.com/'
+    // 'http://slasherhub.com/',
+    // 'http://gosportx.com/',
+    // 'http://gotrek.com/',
+    // 'http://gossipwheel.com/',
+    // 'http://trendznet.com/',
   ];
+
   User users = FirebaseAuth.instance.currentUser;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Admob.initialize();
+    reward = AdmobReward(
+        adUnitId: AdMobServices.rewardId,
+        listener: (event, args) {
+          if (event == AdmobAdEvent.rewarded) {
+            print('rewarded');
+            handleEvent(event, args, 'Reward', context);
+          } else if (event == AdmobAdEvent.closed) {
+            print('reward closed');
+          }
+        });
+    reward.load();
+  }
+
+  void handleEvent(AdmobAdEvent event, Map<String, dynamic> args, String adType,
+      BuildContext context) async {
+    switch (event) {
+      case AdmobAdEvent.loaded:
+        print('loaded');
+        break;
+      case AdmobAdEvent.opened:
+        print('opened');
+        break;
+      case AdmobAdEvent.closed:
+        print('loaded');
+        break;
+      case AdmobAdEvent.failedToLoad:
+        // showSnackBar('Admob $adType failed to load. :(');
+        break;
+      case AdmobAdEvent.rewarded:
+        {
+          print("rewarded");
+          UserProvider _userProvider =
+              Provider.of<UserProvider>(context, listen: false);
+          _userProvider.updatePoint(100);
+          break;
+        }
+        // showDialog(
+        //   context: scaffoldState.currentContext,
+        //   builder: (BuildContext context) {
+        //     return WillPopScope(
+        //       child: AlertDialog(
+        //         content: Column(
+        //           mainAxisSize: MainAxisSize.min,
+        //           children: <Widget>[
+        //             Text('Reward callback fired. Thanks Andrew!'),
+        //             Text('Type: ${args['type']}'),
+        //             Text('Amount: ${args['amount']}'),
+        //           ],
+        //         ),
+        //       ),
+        //       onWillPop: () async {
+        //         scaffoldState.currentState.hideCurrentSnackBar();
+        //         return true;
+        //       },
+        //     );
+        //   },
+        // );
+        break;
+      default:
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,9 +166,10 @@ class ViewAll extends StatelessWidget {
                             height: 150,
                             width: MediaQuery.of(context).size.width / 1.8,
                             decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                // borderRadius: BorderRadius.circular(120),
-                                color: Color(0xFF161b18)),
+                              shape: BoxShape.circle,
+                              // borderRadius: BorderRadius.circular(120),
+                              color: Colors.grey[300],
+                            ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -108,7 +194,7 @@ class ViewAll extends StatelessWidget {
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 18,
-                                            color: Colors.white,
+                                            color: Color(0xFF161b18),
                                             shadows: [
                                               BoxShadow(
                                                 color: Color.fromRGBO(
@@ -119,6 +205,58 @@ class ViewAll extends StatelessWidget {
                                             ]));
                                   },
                                 ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            // color: Colors.grey[500],
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'Watch an ad to earn points',
+                                    style: TextStyle(
+                                      // color: Colors.black,
+                                      // fontWeight:
+                                      //     FontWeight.bold,
+                                      fontSize: 15.0,
+                                    ),
+                                  ),
+                                ),
+                                Spacer(),
+                                FlatButton(
+                                  shape: RoundedRectangleBorder(
+                                      side: BorderSide(
+                                          color: Colors.grey,
+                                          width: 1,
+                                          style: BorderStyle.solid),
+                                      borderRadius: BorderRadius.circular(10)),
+                                  color: Colors.black,
+                                  onPressed: () async {
+                                    if (!(await reward.isLoaded)) {
+                                      Fluttertoast.showToast(
+                                        msg: "please wait for the ad to load",
+                                        toastLength: Toast.LENGTH_LONG,
+                                        gravity: ToastGravity.CENTER,
+                                      );
+                                    } else if (await reward.isLoaded) {
+                                      reward.show();
+                                      UserProvider _userProvider =
+                                          Provider.of<UserProvider>(context,
+                                              listen: false);
+                                      _userProvider.updatePoint(100);
+                                      Fluttertoast.showToast(
+                                        msg: "+100 points to watch full ad",
+                                        toastLength: Toast.LENGTH_LONG,
+                                        gravity: ToastGravity.CENTER,
+                                      );
+                                    }
+                                  },
+                                  child: Text(
+                                    'watch',
+                                  ),
+                                )
                               ],
                             ),
                           ),
@@ -134,112 +272,147 @@ class ViewAll extends StatelessWidget {
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10.0, vertical: 4.0),
-                                  child: Card(
-                                    child: Container(
-                                      padding: EdgeInsets.all(8.0),
-                                      height: 150,
-                                      color: Colors.grey[300],
-                                      child: Column(
-                                        children: [
-                                          Row(
-                                            children: <Widget>[
-                                              ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                child: aboutUs[index] !=
-                                                        'no image'
-                                                    ? Container(
-                                                        width: 100,
-                                                        height: 85,
-                                                        child: Center(
-                                                            child: Image.asset(
-                                                          image[index],
-                                                          fit: BoxFit.cover,
-                                                        )))
-                                                    : Container(
-                                                        color: Colors.white,
-                                                        width: 100,
-                                                        height: 85,
-                                                        child: Center(
-                                                            child: Text(
-                                                                'no image'))),
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Flexible(
-                                                child: SizedBox(
-                                                  height: 85.0,
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: <Widget>[
-                                                      Text(
-                                                        aboutUs[index],
-                                                        textAlign:
-                                                            TextAlign.left,
-                                                        maxLines: 3,
-                                                        overflow: TextOverflow
-                                                            .ellipsis, //TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18.0, fontFamily: 'Roboto'),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                          Consumer<UserProvider>(
-                                            builder: (__, userData, ___) {
-                                              return userData.user.channels
-                                                      .contains(blogs[index])
-                                                  ? Text('Subscribed',
+                                  child: Container(
+                                    padding: EdgeInsets.all(8.0),
+                                    height: 150,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      // color: Colors.grey[100],
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: <Widget>[
+                                            ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              child: aboutUs[index] !=
+                                                      'no image'
+                                                  ? Container(
+                                                      width: 100,
+                                                      height: 85,
+                                                      child: Center(
+                                                          child: Image.asset(
+                                                        image[index],
+                                                        fit: BoxFit.cover,
+                                                      )))
+                                                  : Container(
+                                                      color: Colors.white,
+                                                      width: 100,
+                                                      height: 85,
+                                                      child: Center(
+                                                          child: Text(
+                                                              'no image'))),
+                                            ),
+                                            SizedBox(
+                                              width: 20,
+                                            ),
+                                            Flexible(
+                                              child: SizedBox(
+                                                height: 85.0,
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    Text(
+                                                      aboutUs[index],
+                                                      textAlign: TextAlign.left,
+                                                      maxLines: 3,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
                                                       style: TextStyle(
-                                                          color: logoGreen))
-                                                  : Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment.end,
-                                                      children: [
-                                                        RaisedButton(
-                                                          color:
-                                                              Color(0xFF161b18),
-                                                          onPressed: () {},
-                                                          child: Text(
-                                                            'Buy Rs.10',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white),
-                                                          ),
+                                                        // color: Colors.black,
+                                                        // fontWeight:
+                                                        //     FontWeight.bold,
+                                                        fontSize: 15.0,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                        Consumer<UserProvider>(
+                                          builder: (__, userData, ___) {
+                                            return userData.user.channels
+                                                    .contains(blogs[index])
+                                                ? Text('Subscribed',
+                                                    style: TextStyle(
+                                                        color: logoGreen))
+                                                : Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.end,
+                                                    children: [
+                                                      RaisedButton(
+                                                        shape: RoundedRectangleBorder(
+                                                            side: BorderSide(
+                                                                color:
+                                                                    Colors.grey,
+                                                                width: 1,
+                                                                style:
+                                                                    BorderStyle
+                                                                        .solid),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10)),
+                                                        color:
+                                                            Color(0xFF161b18),
+                                                        onPressed: () {
+                                                          Navigator.of(context).push(
+                                                              MaterialPageRoute(
+                                                                  builder: (context) =>
+                                                                      PayPage(blogs[
+                                                                          index])));
+                                                        },
+                                                        child: Text(
+                                                          'Buy Rs.10',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
                                                         ),
-                                                        SizedBox(
-                                                          width: 10,
+                                                      ),
+                                                      SizedBox(
+                                                        width: 10,
+                                                      ),
+                                                      RaisedButton(
+                                                        shape: RoundedRectangleBorder(
+                                                            side: BorderSide(
+                                                                color:
+                                                                    Colors.grey,
+                                                                width: 1,
+                                                                style:
+                                                                    BorderStyle
+                                                                        .solid),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        10)),
+                                                        color:
+                                                            Color(0xFF161b18),
+                                                        onPressed: () {
+                                                          showAlertDialog(
+                                                              context,
+                                                              userData
+                                                                  .user.points,
+                                                              blogs[index]);
+                                                        },
+                                                        child: Text(
+                                                          'Use points',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
                                                         ),
-                                                        RaisedButton(
-                                                          color:
-                                                              Color(0xFF161b18),
-                                                          onPressed: () {
-                                                            showAlertDialog(
-                                                                context,
-                                                                userData.user
-                                                                    .points,
-                                                                blogs[index]);
-                                                          },
-                                                          child: Text(
-                                                            'Use points',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white),
-                                                          ),
-                                                        )
-                                                      ],
-                                                    );
-                                            },
-                                          )
-                                        ],
-                                      ),
+                                                      )
+                                                    ],
+                                                  );
+                                          },
+                                        )
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -256,13 +429,18 @@ class ViewAll extends StatelessWidget {
                     ),
                   ),
                   Consumer<UserProvider>(
-                    builder: (_, userData, ___) {
+                    builder: (_, userData, __) {
                       return ListView.builder(
                         itemCount: userData.user.channels.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return PostsList(
-                            baseurl: userData.user.channels[index],
-                          );
+                          return userData != null
+                              ? PostsList(
+                                  baseurl: userData.user.channels[index],
+                                )
+                              : Text(
+                                  'no data',
+                                  style: TextStyle(color: Colors.amber),
+                                );
                         },
                       );
                     },
@@ -287,12 +465,10 @@ class ViewAll extends StatelessWidget {
     UserProvider _userProvider =
         Provider.of<UserProvider>(context, listen: false);
     Widget okButton = FlatButton(
-      child: Text("OK"),
+      child: Text("Yes"),
       onPressed: () async {
-        SharedPreferences _prefs = await SharedPreferences.getInstance();
         print(channel);
         print(points);
-        String _userStringify = _prefs.getString('usersData');
         _userProvider.updatePoint(10, isReduce: true);
         _userProvider.updateChannelList(channel);
         Navigator.pop(context);
@@ -324,15 +500,16 @@ class ViewAll extends StatelessWidget {
       },
     );
     // set up the AlertDialog
-    AlertDialog alert = 1000 >= 1000
+    AlertDialog alert = points >= 1000
         ? AlertDialog(
             title: Text("Subscribe"),
-            content: Text("You now have acces to this blog!!!"),
+            content: Text("Do you want to subscribe this blog?"),
             actions: [cancel, okButton],
           )
         : AlertDialog(
             title: Text("Subscribe"),
-            content: Text("You dont have enough points!!! :("),
+            content: Text(
+                "You dont have enough points :(. \n You need ${1000 - points} genius points\n more!!!"),
             actions: [ok],
           );
 

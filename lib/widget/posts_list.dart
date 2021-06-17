@@ -1,13 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
 
-// import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:google_signin_example/database/databasehelep.dart';
 import 'package:google_signin_example/database/db_model.dart';
-import 'package:shimmer/shimmer.dart';
 
-import '../admob.dart';
 import '../model/post_entity.dart';
 import '../network/wp_api.dart';
 import 'post_list_item.dart';
@@ -36,7 +32,7 @@ class _PostsListState extends State<PostsList> {
         page++;
         isLoading = true;
       });
-      print('in here for slasher: ${widget.baseurl}');
+      print('in here for slasher: $page');
       WpApi.getPostsList(
               category: widget.category, page: page, baseurl: widget.baseurl)
           .then((_posts) {
@@ -95,7 +91,7 @@ class _PostsListState extends State<PostsList> {
   Widget build(BuildContext context) {
     return ListView.builder(
       itemBuilder: postTile,
-      itemCount: posts.length + 1,
+      itemCount: posts.length,
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
       physics: ClampingScrollPhysics(),

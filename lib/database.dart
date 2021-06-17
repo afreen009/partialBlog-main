@@ -1,13 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:google_signin_example/states/current_user.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class FirebasesData {
+class FirebasesData with ChangeNotifier {
   /// The main Firestore user collection
   User usersname = FirebaseAuth.instance.currentUser;
-
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   FirebaseFirestore _instance = FirebaseFirestore.instance;
-  String _collectionName = 'users';
+  // String _collectionName = 'users';
+  final CollectionReference _transactions =
+      FirebaseFirestore.instance.collection('users');
 
   static final FirebasesData instance = FirebasesData._();
 
@@ -15,7 +19,7 @@ class FirebasesData {
 
   Future<bool> checkExistanceOfUserData(String userId) async {
     DocumentSnapshot _documentSnapshot =
-        await this._instance.collection(this._collectionName).doc(userId).get();
+        await this._transactions.doc(userId).get();
     if (_documentSnapshot.exists) {
       return true;
     }
@@ -23,12 +27,14 @@ class FirebasesData {
   }
 
   Future<void> createOrUpdateUserData(UserData userData) async {
+    print("userdata:${userData.userId}");
+    String uid = userData.userId != null
+        ? userData.userId
+        : (await _prefs).getString('userId').toString();
+    print('the userdata$userData');
     try {
-      await this
-          ._instance
-          .collection('users')
-          .doc(userData.userId)
-          .set(userData.toJson());
+      await this._transactions.doc(uid).set(userData.toJson());
+      notifyListeners();
     } catch (e) {
       throw Exception(e.toString());
     }
@@ -62,14 +68,27 @@ class FirebasesData {
   //   updateUserPresence();
   // }
 
-  Future<DocumentSnapshot> retrieveUser(String userId) async {
+  Future<bool> retrieveUser(String userId) async {
+    // return await databaseReference.child
+    try {
+      DocumentSnapshot _doc = await this._instance.doc("users/$userId").get();
+      if (_doc.exists) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future retrieveUsersData(String userId) async {
     // return await databaseReference.child
     try {
       DocumentSnapshot _doc = await this._instance.doc("users/$userId").get();
       if (_doc.exists) {
         return _doc;
       }
-      return null;
+      return false;
     } catch (e) {
       throw Exception(e.toString());
     }

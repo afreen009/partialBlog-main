@@ -16,7 +16,7 @@ class VideoPlayerApp extends StatefulWidget {
 
 class _VideoPlayerAppState extends State<VideoPlayerApp> {
   Channel _channel;
-  AdmobInterstitial interstitialAd;
+  // AdmobInterstitial interstitialAd;`
   // AdmobReward reward;
   bool _isLoading = false;
   Color primaryColor = Color(0xff18203d);
@@ -27,14 +27,14 @@ class _VideoPlayerAppState extends State<VideoPlayerApp> {
   void initState() {
     super.initState();
     _initChannel();
-    interstitialAd = AdmobInterstitial(
-      adUnitId: AdMobServices.interstitialId,
-      listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-        if (event == AdmobAdEvent.closed) interstitialAd.load();
-        handleEvent(event, args, 'Interstitial');
-      },
-    );
-    interstitialAd.load();
+    // interstitialAd = AdmobInterstitial(
+    //   adUnitId: AdMobServices.interstitialId,
+    //   listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+    //     if (event == AdmobAdEvent.closed) interstitialAd.load();
+    //     handleEvent(event, args, 'Interstitial');
+    //   },
+    // );
+    // interstitialAd.load();
     // reward = AdmobReward(
     //     adUnitId: AdMobServices.rewardId,
     //     listener: (event, args) {
@@ -63,9 +63,9 @@ class _VideoPlayerAppState extends State<VideoPlayerApp> {
           children: [
             GestureDetector(
               onTap: () async {
-                if (await interstitialAd.isLoaded) {
-                  interstitialAd.show();
-                }
+                // if (await interstitialAd.isLoaded) {
+                //   interstitialAd.show();
+                // }
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -243,7 +243,7 @@ class _VideoPlayerAppState extends State<VideoPlayerApp> {
 
   @override
   void dispose() {
-    interstitialAd?.dispose();
+    // interstitialAd?.dispose();
     // reward?.dispose();
     super.dispose();
   }

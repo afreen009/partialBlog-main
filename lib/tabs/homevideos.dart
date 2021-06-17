@@ -227,18 +227,15 @@ class _HomeVideosState extends State<HomeVideos> {
             },
             child: Container(
               // height: 500,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: ListView.builder(
-                  itemCount: 1 + _channel.videos.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == 0) {
-                      return Container();
-                    }
-                    Video videos = _channel.videos[index - 1];
-                    return _buildVideo(videos, _channel);
-                  },
-                ),
+              child: ListView.builder(
+                itemCount: 1 + _channel.videos.length,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == 0) {
+                    return Container();
+                  }
+                  Video videos = _channel.videos[index - 1];
+                  return _buildVideo(videos, _channel);
+                },
               ),
             ),
           )

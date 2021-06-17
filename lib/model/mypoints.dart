@@ -1,85 +1,210 @@
-// import 'dart:convert';
-// import 'dart:math';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'package:google_signin_example/providers/user_provder.dart';
+import 'package:provider/provider.dart';
+import 'package:upi_india/upi_india.dart';
 
-//     class Authfirestore {
-//       final String uid;
-//       int points;
-//       var dateFromApitme;
-//       String lastTimeGotPointsFromFirebase;
-//       Authfirestore({this.uid, this.points});
+class PayPage extends StatefulWidget {
+  final String channel;
+  PayPage(this.channel);
+  @override
+  _PayPageState createState() => _PayPageState();
+}
 
-//       Firestore _firestore = Firestore();
+class _PayPageState extends State<PayPage> {
+  Future<UpiResponse> _transaction;
+  UpiIndia _upiIndia = UpiIndia();
+  List<UpiApp> apps;
 
-//       Future checkPoints() async {
-//         await dateApi();
-//         if (dateFromApitme != null ) {
-//           try {
-//             if (lastTimeGotPointsFromFirebase != dateFromApitme && dateFromApitme != null) {
-//               await getData();
-//               dynamic result = _firestore
-//                   .collection('users')
-//                   .document('Jm7bx8NOE9Nfx6P8S1wD')
-//                   .setData({
-//                 'points': points + 1,
-//                 'LastTimeGotPoints' :dateFromApitme,
-//               });
-//               await getData();
-//               print(result.toString());
-//               trackingData();
-//             } else {
-//               print('You toke your cridit ');
-//             }
-//           } catch (e) {
-//             print('Error in cehckpoints $e');
-//           }
-//         }
-//       }
+  TextStyle header = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+  );
 
-//       Future trackingData() async {
-//         await Firestore.instance
-//             .collection('users')
-//             .document('Jm7bx8NOE9Nfx6P8S1wD')
-//             .collection('tracking')
-//             .document(_randomString(20))
-//             .setData({
-//           'date': DateTime.now(),
-//         });
-//       }
+  TextStyle value = TextStyle(
+    fontWeight: FontWeight.w400,
+    fontSize: 14,
+  );
 
-//       Future getData() async {
-//         await Firestore.instance
-//             .collection('users')
-//             .document('Jm7bx8NOE9Nfx6P8S1wD')
-//             .get()
-//             .then((DocumentSnapshot ds) {
-//           // points = ds.data;
-//           lastTimeGotPointsFromFirebase = ds.data['LastTimeGotPoints'];
-//           print('number of points is $points');
-//         });
+  @override
+  void initState() {
+    _upiIndia.getAllUpiApps(mandatoryTransactionId: false).then((value) {
+      setState(() {
+        apps = value;
+      });
+    }).catchError((e) {
+      apps = [];
+    });
+    super.initState();
+  }
 
-//       }
+  Future<UpiResponse> initiateTransaction(UpiApp app) async {
+    return _upiIndia.startTransaction(
+      app: app,
+      receiverUpiId: "udaybajaj@okicici",
+      receiverName: 'uday',
+      transactionRefId: app.name,
+      // transactionNote: 'Not actual. Just an example.',
+      amount: 1.00,
+    );
+  }
 
-//       String _randomString(int length) {
-//         var rand = new Random();
-//     var codeUnits = new List.generate(length, (index) {
-//       return rand.nextInt(33) + 89;
-//     });
+  Widget displayUpiApps() {
+    if (apps == null)
+      return Center(child: CircularProgressIndicator());
+    else if (apps.length == 0)
+      return Center(
+        child: Text(
+          "No apps found to handle transaction.",
+          style: header,
+        ),
+      );
+    else
+      return Align(
+        alignment: Alignment.topCenter,
+        child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: Wrap(
+            children: apps.map<Widget>((UpiApp app) {
+              return GestureDetector(
+                onTap: () {
+                  _transaction = initiateTransaction(app);
+                  setState(() {});
+                },
+                child: Container(
+                  height: 100,
+                  width: 100,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Image.memory(
+                        app.icon,
+                        height: 60,
+                        width: 60,
+                      ),
+                      Text(app.name),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      );
+  }
 
-//     return new String.fromCharCodes(codeUnits);
-//   }
+  String _upiErrorHandler(error) {
+    switch (error) {
+      case UpiIndiaAppNotInstalledException:
+        return 'Requested app not installed on device';
+      case UpiIndiaUserCancelledException:
+        return 'You cancelled the transaction';
+      case UpiIndiaNullResponseException:
+        return 'Requested app didn\'t return any response';
+      case UpiIndiaInvalidParametersException:
+        return 'Requested app cannot handle the transaction';
+      default:
+        return 'An Unknown error has occurred';
+    }
+  }
 
-//   Future dateApi() async {
-//     var response =
-//         await http.get('http://worldtimeapi.org/api/timezone/Asia/Muscat');
-//     if (response != null) {
-//       var data0 = jsonDecode(response.body);
-//       var data01 = data0['datetime'];
-//       dateFromApitme = data01.substring(0, 9);
-//     } else {
-//       dateFromApitme = null;
-//       print('Please Check Your internet');
-//     }
-//   }
-// }
+  void _checkTxnStatus(String status) async {
+    UserProvider _userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+    switch (status) {
+      case UpiPaymentStatus.SUCCESS:
+        print('Transaction Successful');
+        print(widget.channel);
+        _userProvider.updateChannelList(widget.channel);
+        break;
+      case UpiPaymentStatus.SUBMITTED:
+        print('Transaction Submitted');
+        break;
+      case UpiPaymentStatus.FAILURE:
+        print('Transaction Failed');
+        break;
+      default:
+        print('Received an Unknown transaction status');
+    }
+  }
+
+  Widget displayTransactionData(title, body) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("$title: ", style: header),
+          Flexible(
+              child: Text(
+            body,
+            style: value,
+          )),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('UPI'),
+      ),
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            child: displayUpiApps(),
+          ),
+          Expanded(
+            child: FutureBuilder(
+              future: _transaction,
+              builder:
+                  (BuildContext context, AsyncSnapshot<UpiResponse> snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        _upiErrorHandler(snapshot.error.runtimeType),
+                        style: header,
+                      ), // Print's text message on screen
+                    );
+                  }
+
+                  // If we have data then definitely we will have UpiResponse.
+                  // It cannot be null
+                  UpiResponse _upiResponse = snapshot.data;
+
+                  // Data in UpiResponse can be null. Check before printing
+                  String txnId = _upiResponse.transactionId ?? 'N/A';
+                  String resCode = _upiResponse.responseCode ?? 'N/A';
+                  String txnRef = _upiResponse.transactionRefId ?? 'N/A';
+                  String status = _upiResponse.status ?? 'N/A';
+                  String approvalRef = _upiResponse.approvalRefNo ?? 'N/A';
+                  _checkTxnStatus(status);
+
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        displayTransactionData('Transaction Id', txnId),
+                        displayTransactionData('Response Code', resCode),
+                        displayTransactionData('Reference Id', txnRef),
+                        displayTransactionData('Status', status.toUpperCase()),
+                        displayTransactionData('Approval No', approvalRef),
+                      ],
+                    ),
+                  );
+                } else
+                  return Center(
+                    child: Text(''),
+                  );
+              },
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}

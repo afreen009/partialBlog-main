@@ -21,16 +21,12 @@ class _FirstState extends State<First> {
             ListHeading(FEATURED_CATEGORY_TITLE, FEATURED_CATEGORY_ID),
             Container(
               height: 200.0,
-              child: FeaturedCategoryList(
-                'http://festivalsofearth.com/',
-              ),
+              child: FeaturedCategoryList('https://festivalsofearth.com/'),
             ),
             ListHeading('Latest', 0),
             Flexible(
               fit: FlexFit.loose,
-              child: PostsList(
-                baseurl: 'http://festivalsofearth.com/',
-              ),
+              child: PostsList(baseurl: 'https://festivalsofearth.com/'),
             ),
           ],
         ),

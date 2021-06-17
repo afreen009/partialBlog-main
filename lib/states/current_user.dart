@@ -7,6 +7,7 @@ class UserData {
   String userId;
   String pictureUrl;
   String email;
+  String phoneNumber;
   int points;
   List<dynamic> channels;
 
@@ -15,15 +16,16 @@ class UserData {
     @required this.userId,
     @required this.email,
     @required this.pictureUrl,
+    this.phoneNumber,
     this.points: 0,
     this.channels,
   });
-  //which version of flutter are currently using ?  okay I saw th thought enable null safety np
 
   UserData.fromJson(Map<String, dynamic> jsonObj) {
     this.name = jsonObj['name'] ?? '';
     this.email = jsonObj['email'] ?? '';
     this.pictureUrl = jsonObj['pictureUrl'] ?? '';
+    this.phoneNumber = jsonObj['phoneNumber'] ?? '';
     this.userId = jsonObj['userId'];
     this.points = jsonObj['points'] ?? 0;
     this.channels = jsonObj['channel'] ?? [];
@@ -34,6 +36,7 @@ class UserData {
         'points': this.points,
         'channel': this.channels,
         'pictureUrl': this.pictureUrl,
+        'phoneNumber': this.phoneNumber,
         'email': this.email,
         'userId': this.userId
       };

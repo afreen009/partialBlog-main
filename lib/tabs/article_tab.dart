@@ -26,6 +26,7 @@ class _ArticleTabState extends State<ArticleTab>
   @override
   Widget build(BuildContext context) {
     Color color = Style.get(false).buttonColor;
+    Color logoGreen = Color(0xff25bcbb);
     return Container(
       child: DefaultTabController(
         length: 4,
@@ -33,9 +34,8 @@ class _ArticleTabState extends State<ArticleTab>
           child: Column(
             children: [
               Container(
-                color: Colors.black,
                 child: TabBar(
-                  // labelColor: Colors.white,
+                  // labelColor: logoGreen,
                   // indicatorColor: Colors.white,s
                   // controller: _tabController,
                   tabs: <Widget>[
@@ -58,17 +58,17 @@ class _ArticleTabState extends State<ArticleTab>
                     Tab(
                       child: Text(
                         'Insurance',
-                        // style: TextStyle(
-                        //     fontSize: 12,
-                        //     color: color,
-                        //     fontWeight: FontWeight.bold,
-                        //     shadows: [
-                        //       BoxShadow(
-                        //         color: Color.fromRGBO(0, 0, 0, 0.15),
-                        //         offset: Offset(0, 5),
-                        //         blurRadius: 10.0,
-                        //       )
-                        //     ]),
+                        style: TextStyle(
+                            fontSize: 13,
+                            // color: color,
+                            fontWeight: FontWeight.bold,
+                            shadows: [
+                              BoxShadow(
+                                color: Color.fromRGBO(0, 0, 0, 0.15),
+                                offset: Offset(0, 5),
+                                blurRadius: 10.0,
+                              )
+                            ]),
                       ),
                     ),
                     Tab(
@@ -112,9 +112,9 @@ class _ArticleTabState extends State<ArticleTab>
                   child: TabBarView(
                     children: [
                       EngineJunkies(),
-                      First(),
                       Insurance(),
                       BookWorms(),
+                      First(),
                     ],
                   ),
                 ),

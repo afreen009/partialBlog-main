@@ -22,7 +22,7 @@ class _EngineJunkiesState extends State<EngineJunkies> {
             ListHeading(FEATURED_CATEGORY_TITLE, FEATURED_CATEGORY_ID),
             Container(
               height: 200.0,
-              child: FeaturedCategoryList('https://bookworms99.com/'),
+              child: FeaturedCategoryList('https://enginejunkies.com/'),
             ),
             // AdmobBanner(
             //     adUnitId: AdMobServices.bannerId,
@@ -30,7 +30,7 @@ class _EngineJunkiesState extends State<EngineJunkies> {
             ListHeading('Latest', 0),
             Flexible(
               fit: FlexFit.loose,
-              child: PostsList(baseurl: 'https://bookworms99.com/'),
+              child: PostsList(baseurl: 'https://enginejunkies.com/'),
             ),
           ],
         ),

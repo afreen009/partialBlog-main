@@ -25,14 +25,11 @@ class _PostCardState extends State<PostCard> {
   SharingPost share;
   // AdmobInterstitial interstitial;
 
-  String _selectedChoices;
   // final FirebaseServices firebaseService = FirebaseServices.instance;
   final shareData = SharingPost();
 
   void _select(String choice) {
-    setState(() {
-      _selectedChoices = choice;
-    });
+    setState(() {});
     // showSnackBar(choice);
   }
 
@@ -164,9 +161,6 @@ class _PostCardState extends State<PostCard> {
                               sharePost(context);
                             });
                           } else {
-                            BookMarks bookMarks = BookMarks(
-                                postsId: widget.post.id.toString(),
-                                categoryId: widget.post.category);
                             // addBookMarks(bookMarks);
                           }
                         },
@@ -273,17 +267,21 @@ class Author extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: Row(
         children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(6.0),
-            child: Image.network(
-              post.extra.author[0].avatar,
-              height: 26.0,
-            ),
-          ),
+          post.extra.author[0].avatar != null
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(6.0),
+                  child: Image.network(
+                    post.extra.author[0].avatar,
+                    height: 26.0,
+                  ),
+                )
+              : Container(),
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
             child: Text(
-              post.extra.author[0].name,
+              post.extra.author[0].name == null
+                  ? ""
+                  : post.extra.author[0].name,
               style: TextStyle(
                 // color: Colors.white,
                 fontWeight: FontWeight.bold,

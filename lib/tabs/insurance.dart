@@ -21,13 +21,13 @@ class _InsuranceState extends State<Insurance> {
             ListHeading(FEATURED_CATEGORY_TITLE, FEATURED_CATEGORY_ID),
             Container(
               height: 200.0,
-              child: FeaturedCategoryList('http://insuranceofearth.com/'),
+              child: FeaturedCategoryList('https://insuranceofearth.com/'),
             ),
             ListHeading('Latest', 0),
             Flexible(
               fit: FlexFit.loose,
               child: PostsList(
-                baseurl: 'http://insuranceofearth.com/',
+                baseurl: 'https://insuranceofearth.com/',
               ),
             ),
           ],

@@ -30,14 +30,37 @@ class _WelcomeState extends State<Welcome> {
           child: Stack(
             children: [
               Positioned(
-                top: MediaQuery.of(context).size.height / 6,
+                top: 90,
+                right: 100,
+                left: 100,
+                child: Center(
+                  child: Text(
+                    'Zalpha',
+                    style: TextStyle(
+                        // color: logoGreen,
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: MediaQuery.of(context).size.height / 5,
                 left: 5,
                 right: 5,
                 child: Container(
+                  decoration: BoxDecoration(
+                    // color: Colors.white10,
+                    border: Border.all(color: Colors.white, width: 0.5),
+                    borderRadius: BorderRadius.all(Radius.circular(
+                            20.0) //                 <--- border radius here
+                        ),
+                  ),
                   margin: EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     children: <Widget>[
                       //We take the image from the assets
+
                       Container(
                         child: Shimmer.fromColors(
                           period: Duration(milliseconds: 1500),
@@ -45,43 +68,67 @@ class _WelcomeState extends State<Welcome> {
                           highlightColor: Colors.grey[300],
                           child: Image.asset(
                             'assets/logo.png',
-                            height: 200,
-                            width: 200,
+                            height: 180,
+                            width: 180,
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: 8,
-                      ),
+                      // SizedBox(
+                      //   height: 18,
+                      // ),
                       //Texts and Styling of them
-                      Text(
-                        'Welcome to the Genius App',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Our mission is to grow every Indian, into a Genius.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: logoGreen, fontSize: 16),
+
+                      // SizedBox(height: 5),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '1% better\neach day',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                // color: Colors.red,
+                                fontSize: 18,
+                                fontStyle: FontStyle.italic),
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            '=',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontStyle: FontStyle.italic),
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            '3678% better\neach year',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                // color: Colors.blue,
+                                fontSize: 18,
+                                fontStyle: FontStyle.italic),
+                          ),
+                        ],
                       ),
                       SizedBox(
-                        height: 60,
+                        height: 20,
                       ),
-                      //Our MaterialButton which when pressed will take us to a new screen named as
-                      //LoginScreen
-                      GoogleSignupButtonWidget(),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      FacebookButton()
                     ],
                   ),
                 ),
               ),
+              Positioned(
+                  bottom: 150,
+                  left: 5,
+                  right: 5,
+                  child: Column(
+                    children: [
+                      //Our MaterialButton which when pressed will take us to a new screen named as
+                      //LoginScreen
+                      GoogleSignupButtonWidget(),
+                      FacebookButton()
+                    ],
+                  )),
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Text('Terms and Condition',

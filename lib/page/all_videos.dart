@@ -11,15 +11,9 @@ class VideoTab extends StatefulWidget {
 
 class _VideoTabState extends State<VideoTab>
     with SingleTickerProviderStateMixin {
-  TabController _tabController;
-
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(
-      length: 4,
-      vsync: this,
-    );
   }
 
   @override

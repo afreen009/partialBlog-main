@@ -6,44 +6,48 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  admob_flutter: ^1.0.1
+  admob_flutter: null
   animations: ^1.1.2
   auto_size_text: ^2.1.0
-  bubble_bottom_bar: ^1.2.0
   cached_network_image: ^2.0.0
   circular_reveal_animation: ^1.1.5
   cloud_firestore: ^0.14.3
   cupertino_icons: ^1.0.0
   curved_navigation_bar: ^0.3.7
-  custom_switch: ^0.0.1
   dio: ^3.0.10
+  firebase_analytics: null
   firebase_auth: ^0.18.3
   firebase_core: ^0.5.2
   firebase_database: ^4.3.0
-  firebase_messaging: null
+  firebase_messaging: ^7.0.3
   flutter_html: ^0.11.0
   flutter_inapp_purchase: ^3.0.1
-  flutter_local_notifications: ^4.0.1+2
-  flutter_native_admob: null
+  flutter_local_notifications: ^1.4.4+1
+  circular_countdown_timer: ^0.0.8
   flutter_swiper: ^1.1.6
   flutter_wordpress: ^0.2.1
   fluttertoast: ^7.1.6
   font_awesome_flutter: ^8.10.0
-  form_field_validator: ^1.0.1
-  google_fonts: ^1.1.1
-  google_sign_in: ^4.5.6
+  rflutter_alert: ^1.0.8
+  get_it: ^4.0.2
+  google_sign_in: 4.5.3
+  flutter_facebook_login: 3.0.0
   html: null
   http: ^0.12.0+2
   in_app_purchase: ^0.3.5+1
+  in_app_update: 
   intl: ^0.16.1
   lint: ^1.2.0
+  onesignal_flutter: null
   provider: ^4.3.3
-  receive_sharing_intent: ^1.4.2
   share: ^0.6.5+4
   shared_preferences: ^0.5.12+4
   shimmer: ^1.1.2
+  upi_india: null
   url_launcher: null
   youtube_player_flutter: ^6.0.3+2
+  avatar_glow: ^1.1.0
+
 
 dev_dependencies:
   flutter_test:
