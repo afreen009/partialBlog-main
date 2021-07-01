@@ -322,7 +322,7 @@ class _HomePageState extends State<HomePage> {
                 // ViewAll(
                 //     // baseurl: [
                 //     //   'https://Slasherhub.com/',
-                //     //   'http://Gosportx.com/',
+                //     //   'http://0x.com/',
                 //     //   'http://Gotrekx.com/',
                 //     //   'https://Gossipwheel.com/',
                 //     //   'https://Trendznet.com/'

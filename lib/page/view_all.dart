@@ -245,7 +245,7 @@ class _ViewAllState extends State<ViewAll> {
                                       UserProvider _userProvider =
                                           Provider.of<UserProvider>(context,
                                               listen: false);
-                                      _userProvider.updatePoint(100);
+                                      _userProvider.updatePoint(50);
                                       Fluttertoast.showToast(
                                         msg: "+100 points to watch full ad",
                                         toastLength: Toast.LENGTH_LONG,

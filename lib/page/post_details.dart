@@ -319,9 +319,9 @@ class _PostDetailsState extends State<PostDetails> {
                 SizedBox(
                   height: 20,
                 ),
-                AdmobBanner(
-                    adUnitId: AdMobServices.bannerId,
-                    adSize: AdmobBannerSize.BANNER),
+                // AdmobBanner(
+                //     adUnitId: AdMobServices.bannerId,
+                //     adSize: AdmobBannerSize.BANNER),
               ],
             ),
           ),

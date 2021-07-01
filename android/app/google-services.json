@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "560438012224",
-    "firebase_url": "https://blog-flutter-173d3-default-rtdb.firebaseio.com",
-    "project_id": "blog-flutter-173d3",
-    "storage_bucket": "blog-flutter-173d3.appspot.com"
+    "project_number": "181729840013",
+    "firebase_url": "https://blog-wordpress-4b3c7-default-rtdb.firebaseio.com",
+    "project_id": "blog-wordpress-4b3c7",
+    "storage_bucket": "blog-wordpress-4b3c7.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:560438012224:android:468ea0ffa62978d2ee32a5",
+        "mobilesdk_app_id": "1:181729840013:android:a68df608c68e69748b4bc4",
         "android_client_info": {
           "package_name": "com.partial.wordpress"
         }
       },
       "oauth_client": [
         {
-          "client_id": "560438012224-ivlkc5tgh8u2rekfrc46neu8s6lhujn2.apps.googleusercontent.com",
+          "client_id": "181729840013-o7a45c5lrf43phqsra1brs7hgdsrtdlm.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.partial.wordpress",
@@ -23,35 +23,27 @@
           }
         },
         {
-          "client_id": "560438012224-tb9op46s8k13fnme176ib0v91emiq34d.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.partial.wordpress",
-            "certificate_hash": "6ae9cb5ad1753613d99cbc0b1ce06a34821c19ab"
-          }
-        },
-        {
-          "client_id": "560438012224-7rugnqiil3i0k39d36o0fpkhpb2nh9kl.apps.googleusercontent.com",
+          "client_id": "181729840013-657192t0mu6vr0b0eopse4o2bu569mn0.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBn5MTVE_E6oA4lr9DkvPKYCTzClkEdHfI"
+          "current_key": "AIzaSyATjnCDU73lHHNZLPDmPbxTANuboLa0J50"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "560438012224-148ep51tf3p5ahirsu4ip6hlj22kcm5t.apps.googleusercontent.com",
+              "client_id": "181729840013-657192t0mu6vr0b0eopse4o2bu569mn0.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "560438012224-oask3vfc1vifpchj9fmiphuggmj1gm6s.apps.googleusercontent.com",
+              "client_id": "181729840013-2lrdcvip47c2o90egvbkhgm8ir636b6s.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.genious.blog"
+                "bundle_id": "com.genius.blog"
               }
             }
           ]
