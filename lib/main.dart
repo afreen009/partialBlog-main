@@ -131,7 +131,7 @@ class _CheckPageState extends State<CheckPage> {
   }
 
   Widget _swtichScreen(AsyncSnapshot<User> userAuthStatus) {
-    print("status$userAuthStatus");
+    // print("status$userAuthStatus");
 
     if (userAuthStatus.connectionState == ConnectionState.waiting) {
       return buildLoading();

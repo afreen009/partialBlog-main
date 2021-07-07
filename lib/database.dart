@@ -27,11 +27,11 @@ class FirebasesData with ChangeNotifier {
   }
 
   Future<void> createOrUpdateUserData(UserData userData) async {
-    print("userdata:${userData.userId}");
+    // print("userdata:${userData.userId}");
     String uid = userData.userId != null
         ? userData.userId
         : (await _prefs).getString('userId').toString();
-    print('the userdata$userData');
+    // print('the userdata$userData');
     try {
       await this._transactions.doc(uid).set(userData.toJson());
       notifyListeners();

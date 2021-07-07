@@ -52,7 +52,7 @@ class _HomePostState extends State<HomePost> {
   sharePost(
     BuildContext context,
   ) {
-    print(widget.post.link);
+    // print(widget.post.link);
     final RenderBox box = context.findRenderObject();
     Share.share(widget.post.title + '\n' + widget.post.link,
         subject: widget.post.link,

@@ -9,8 +9,6 @@ class WpApi {
 
   static Future<List<PostEntity>> getPostsList(
       {int category = 0, int page = 1, String baseurl}) async {
-    print('inside the getpostlist');
-
     List<PostEntity> posts = List();
     try {
       String extra = category != 0 ? '&categories=' + '$category' : '';
@@ -19,7 +17,6 @@ class WpApi {
       dynamic response = await http
           .get(baseurl + REST_URL_PREFIX + '/wp/v2/posts?_embed&page=$page');
       dynamic json = jsonDecode(response.body);
-      print('response:$response');
       (json as List).forEach((v) {
         posts.add(PostEntity.fromJson(v));
       });

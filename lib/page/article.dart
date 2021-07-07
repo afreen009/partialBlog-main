@@ -204,7 +204,7 @@ class _ArticlesState extends State<Articles>
               width: 10,
             ),
             Text(
-              "Most Viewed",
+              "Trending",
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -261,7 +261,11 @@ class _ArticlesState extends State<Articles>
           height: 140.0,
           // color: Colors.blueGrey[100],
           child: HomeCategory(
-            url: ['http://gamesandapps.in/', 'http://managemywealth.in/'],
+            url: [
+              'http://gamesandapps.in/',
+              'http://managemywealth.in/',
+              'https://yourcryptocurrency.in/'
+            ],
             option: 'top',
           ),
         ),

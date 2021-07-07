@@ -52,7 +52,7 @@ class AuthenticationProvider extends ChangeNotifier {
 
       UserCredential gAuth =
           await this._firebaseAuth.signInWithCredential(_credential);
-      print(gAuth.credential);
+      // print(gAuth.credential);
       if (gAuth.user != null) {
         (await _prefs).setString('userId', gAuth.user.uid);
         //Here we give default value to the user once not data is yet stored

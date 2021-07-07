@@ -32,27 +32,36 @@ class _ViewAllState extends State<ViewAll> {
     'Greatness of Culture lies in its Festivals food year new carnival venice comment festival',
     'Secure yourself against losses – insurance health read adminuday posted car travel comments',
     'read young admin comments best books general book',
+    'Know about current apps and games available online'
   ];
 
   List image = [
-    'assets/images/bookworms99.png',
-    'assets/images/enginejunkies.png',
-    'assets/images/festivalsofearth.png',
-    'assets/images/insuranceofearth.png',
+    'assets/images/enginejunkies.jpg',
+    'assets/images/festivalsofearth.jpg',
+    'assets/images/insuranceofearth.jpg',
+    'assets/images/bookworms.jpg',
+    'assets/images/placeholder.jpg'
   ];
 
   List blogs = [
     'https://enginejunkies.com/',
     'http://festivalsofearth.com/',
     'http://insuranceofearth.com/',
-    'http://bookworms99.com/'
+    'http://bookworms99.com/',
+    'http://gamesandapps.in/'
     // 'http://slasherhub.com/',
     // 'http://gosportx.com/',
     // 'http://gotrek.com/',
     // 'http://gossipwheel.com/',
     // 'http://trendznet.com/',
   ];
-
+  List titles = [
+    'Engine Junkies',
+    'Festivals Of Earth',
+    'Insurance Of Earth',
+    'Book Worms',
+    'Games And Apps'
+  ];
   User users = FirebaseAuth.instance.currentUser;
   @override
   void initState() {
@@ -261,6 +270,7 @@ class _ViewAllState extends State<ViewAll> {
                             ),
                           ),
                           ListView.builder(
+                            itemCount: image.length,
                             itemBuilder: (BuildContext context, int index) {
                               return GestureDetector(
                                 onTap: () {
@@ -291,11 +301,14 @@ class _ViewAllState extends State<ViewAll> {
                                                   ? Container(
                                                       width: 100,
                                                       height: 85,
-                                                      child: Center(
-                                                          child: Image.asset(
+                                                      decoration: BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(8)),
+                                                      child: Image.asset(
                                                         image[index],
-                                                        fit: BoxFit.cover,
-                                                      )))
+                                                        fit: BoxFit.fill,
+                                                      ))
                                                   : Container(
                                                       color: Colors.white,
                                                       width: 100,
@@ -318,7 +331,9 @@ class _ViewAllState extends State<ViewAll> {
                                                       CrossAxisAlignment.start,
                                                   children: <Widget>[
                                                     Text(
-                                                      aboutUs[index],
+                                                      titles[index] +
+                                                          ": " +
+                                                          aboutUs[index],
                                                       textAlign: TextAlign.left,
                                                       maxLines: 3,
                                                       overflow:
@@ -418,7 +433,6 @@ class _ViewAllState extends State<ViewAll> {
                                 ),
                               );
                             },
-                            itemCount: aboutUs.length,
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
                             physics: ClampingScrollPhysics(),
@@ -428,22 +442,28 @@ class _ViewAllState extends State<ViewAll> {
                       ),
                     ),
                   ),
-                  Consumer<UserProvider>(
-                    builder: (_, userData, __) {
-                      return ListView.builder(
-                        itemCount: userData.user.channels.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return userData != null
-                              ? PostsList(
-                                  baseurl: userData.user.channels[index],
-                                )
-                              : Text(
-                                  'no data',
-                                  style: TextStyle(color: Colors.amber),
-                                );
-                        },
-                      );
-                    },
+                  Container(
+                    child: Consumer<UserProvider>(
+                      builder: (_, userData, __) {
+                        print(
+                            'length of subscribed blogs${userData.user.channels.length}');
+                        return ListView.builder(
+                          itemCount: userData.user.channels.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return userData.user.channels[index] != 0
+                                ? PostsList(
+                                    baseurl: userData.user.channels[index],
+                                  )
+                                : Center(
+                                    child: Text(
+                                      'no data',
+                                      style: TextStyle(color: Colors.amber),
+                                    ),
+                                  );
+                          },
+                        );
+                      },
+                    ),
                   )
                   // Container(
                   //   height: MediaQuery.of(context).size.height,
@@ -500,7 +520,7 @@ class _ViewAllState extends State<ViewAll> {
       },
     );
     // set up the AlertDialog
-    AlertDialog alert = points >= 1000
+    AlertDialog alert = 1001 >= 1000
         ? AlertDialog(
             title: Text("Subscribe"),
             content: Text("Do you want to subscribe this blog?"),

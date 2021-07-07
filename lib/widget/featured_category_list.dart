@@ -31,7 +31,7 @@ class _FeaturedCategoryListState extends State<FeaturedCategoryList>
           posts.addAll(_posts);
         });
       }
-      posts.shuffle();
+      // posts.shuffle();
     });
   }
 

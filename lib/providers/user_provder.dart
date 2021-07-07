@@ -67,9 +67,6 @@ class UserProvider extends ChangeNotifier {
 
 // Fetch data of user
   Future<void> _init() async {
-    print("it was here");
-    print(_userData);
-
     // final user = FirebaseAuth.instance.currentUser;
     _firebaseAuth.authStateChanges().listen((_user) async => {
           {print(_user)},
@@ -79,7 +76,6 @@ class UserProvider extends ChangeNotifier {
               this.data =
                   await this._firebasesData.retrieveUsersData(_user.uid),
               this.check = await this._firebasesData.retrieveUser(_user.uid),
-              {print("insider inside")},
               //No need to fetch data from the store data are store in cache memory
               this._userData = UserData(
                   email: _user.email,
@@ -88,7 +84,6 @@ class UserProvider extends ChangeNotifier {
                   pictureUrl: _user.uid,
                   channels: check ? data['channel'] : [],
                   points: check ? data['points'] : 0),
-              print("the data here:${this._userData}"),
               await this._firebasesData.createOrUpdateUserData(_userData),
               //Notify
               notifyListeners()

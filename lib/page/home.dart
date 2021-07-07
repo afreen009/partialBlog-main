@@ -11,11 +11,14 @@ import 'package:google_signin_example/page/post_details.dart';
 import 'package:google_signin_example/page/view_all.dart';
 import 'package:google_signin_example/providers/user_provder.dart';
 import 'package:google_signin_example/services/appbar.dart';
+import 'package:google_signin_example/states/current_user.dart';
 import 'package:google_signin_example/widget/config.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
+
+import '../database.dart';
 
 const String testDevice = '';
 
@@ -60,6 +63,7 @@ class _HomePageState extends State<HomePage> {
   Widget _appBarTitle;
   String messageTitle = "Empty";
   String notificationAlert = "alert";
+  var vari;
   static final String oneSignalAppId = 'fa29c813-75c7-4503-85e8-37ae3e3d807e';
   @override
   void initState() {
@@ -95,6 +99,7 @@ class _HomePageState extends State<HomePage> {
       }
       setState(() {});
     });
+
     super.initState();
   }
 
@@ -105,6 +110,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   List<PostEntity> comeon = List<PostEntity>();
+  List<PostEntity> temporaryList = List<PostEntity>();
+  List<PostEntity> latestList = List<PostEntity>();
   Icon _searchIcon = Icon(
     Icons.search,
     // color: Colors.white,
@@ -112,17 +119,23 @@ class _HomePageState extends State<HomePage> {
 
   List<String> url = [
     'https://physicalandmentalhealth.in/',
-    'https://gamesandapps.in/',
+    'https://plsgivejob.in/',
     'https://managemywealth.in/',
     'https://majorworldevents.com/',
+    'https://yourcryptocurrency.in/',
   ];
-
+  FirebasesData _firebasesData = FirebasesData.instance;
   // We have to override the default TextController constructor for the state so that it listens for wether there is text in the search bar, and if there is, set the _searchText String to the TExtController input so we can filter the list accordingly.
   _getNames() async {
-    // await FirebasesData()
-    //     .createUserData(userName: user.displayName, points: 0, channel: '');
-    print("burda:${user.displayName}");
-    print((await _prefs).getString('user_data'));
+    // print('data${data['channel']}');
+    // url.add(data['channel']);
+    var data = await this._firebasesData.retrieveUsersData(user.uid);
+    List list = data['channel'];
+    for (int w = 0; w < list.length; w++) {
+      setState(() {
+        url.add(list[w]);
+      });
+    }
     (await _prefs).setString('email', user.email);
     (await _prefs).setString('profile', user.photoURL);
     (await _prefs).setString('name', user.displayName);
@@ -133,25 +146,38 @@ class _HomePageState extends State<HomePage> {
       ).then((_posts) {
         setState(() {
           comeon.addAll(_posts);
-          for (int j = 0; j < comeon.length; j++) {
-            //'inside');
-            // print("comeon$comeon");
-            tempList.add(comeon[j].title);
+          temporaryList.addAll(_posts);
+          for (int k = 0; k < comeon.length; k++) {
+            if (k <= 3) {
+              latestList.add(temporaryList[k]);
+            }
+            tempList.add(comeon[k].title);
           }
-          //data.length);
+          temporaryList.clear();
+          // for (int j = 0; j < comeon.length; j++) {
+          //   final now = DateTime.now();
+          //   final time = DateTime.parse(comeon[j].date);
+          //   print(now.year == time.year &&
+          //       now.month == time.month &&
+          //       now.day == time.day);
+          //   tempList.add(comeon[j].title);
+          // }
         });
       });
     }
-    print("templist$tempList");
     names = tempList;
     filteredNames = names;
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    print("user.photourl ${user.photoURL}?type=square");
-
+    latestList..shuffle();
+    // var vary = Provider.of<UserData>(context, listen: false);
+    // for (int l = 0; l < vary.channels.length; l++) {
+    //   setState(() {
+    //     url.add(vary.channels[l]);
+    //   });
+    // }
     return Scaffold(
       // resizeToAvoidBottomPadding: false,
       appBar: AppBar(
@@ -317,7 +343,7 @@ class _HomePageState extends State<HomePage> {
           ? IndexedStack(
               index: currentIndex,
               children: <Widget>[
-                Articles(comeon),
+                Articles(latestList),
                 // ArticleTab(),
                 // ViewAll(
                 //     // baseurl: [

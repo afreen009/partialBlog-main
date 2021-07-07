@@ -164,6 +164,28 @@ class _PostListItemState extends State<PostListItem> {
     //       }
     //     });
     String imageUrl = widget.post.image;
+    String title = widget.post.title;
+    bool check = title.contains('&#8217;');
+    bool checkHyphen = title.contains('&#8211;');
+    String newString = '';
+
+    if (check) {
+      final find = '&#8217;';
+      final replaceWith = "'";
+      setState(() {
+        newString = widget.post.title.replaceAll(find, replaceWith);
+      });
+    } else if (checkHyphen) {
+      final find = '&#8211;';
+      final replaceWith = "-";
+      setState(() {
+        newString = widget.post.title.replaceAll(find, replaceWith);
+      });
+    } else {
+      setState(() {
+        newString = widget.post.title;
+      });
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 5.0,
@@ -230,7 +252,7 @@ class _PostListItemState extends State<PostListItem> {
                             children: [
                               Expanded(
                                 child: Text(
-                                  widget.post.title,
+                                  newString,
                                   textAlign: TextAlign.left,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
@@ -270,10 +292,11 @@ class _PostListItemState extends State<PostListItem> {
                               SizedBox(
                                 width: 5,
                               ),
-                              Expanded(
+                              Flexible(
                                 child: Text(widget.post.category,
                                     textAlign: TextAlign.start,
-                                    overflow: TextOverflow.fade,
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                         color: Colors.grey,
                                         fontSize: 12,

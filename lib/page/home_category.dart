@@ -56,7 +56,7 @@ class _HomeCategoryState extends State<HomeCategory>
   Widget build(BuildContext context) {
     // items.forEach((element) => videoList.add(element));
     // var newList = items + videoList;
-    posts.shuffle();
+    // posts.shuffle();
     //videoList);
     super.build(context);
     return isLoading || posts.isEmpty

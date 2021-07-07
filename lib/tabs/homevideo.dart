@@ -478,7 +478,7 @@ class _HomeVideoState extends State<HomeVideo> {
         : Container(
             width: MediaQuery.of(context).size.width,
             child: ListView.builder(
-              itemCount: 7,
+              itemCount: 17,
               scrollDirection: Axis.vertical,
               primary: false,
               itemBuilder: (context, index) {
