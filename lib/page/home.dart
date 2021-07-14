@@ -144,25 +144,27 @@ class _HomePageState extends State<HomePage> {
         category: FEATURED_CATEGORY_ID,
         baseurl: url[i],
       ).then((_posts) {
-        setState(() {
-          comeon.addAll(_posts);
-          temporaryList.addAll(_posts);
-          for (int k = 0; k < comeon.length; k++) {
-            if (k <= 3) {
-              latestList.add(temporaryList[k]);
+        if (mounted) {
+          setState(() {
+            comeon.addAll(_posts);
+            temporaryList.addAll(_posts);
+            for (int k = 0; k < comeon.length; k++) {
+              if (k <= 3) {
+                latestList.add(temporaryList[k]);
+              }
+              tempList.add(comeon[k].title);
             }
-            tempList.add(comeon[k].title);
-          }
-          temporaryList.clear();
-          // for (int j = 0; j < comeon.length; j++) {
-          //   final now = DateTime.now();
-          //   final time = DateTime.parse(comeon[j].date);
-          //   print(now.year == time.year &&
-          //       now.month == time.month &&
-          //       now.day == time.day);
-          //   tempList.add(comeon[j].title);
-          // }
-        });
+            temporaryList.clear();
+            // for (int j = 0; j < comeon.length; j++) {
+            //   final now = DateTime.now();
+            //   final time = DateTime.parse(comeon[j].date);
+            //   print(now.year == time.year &&
+            //       now.month == time.month &&
+            //       now.day == time.day);
+            //   tempList.add(comeon[j].title);
+            // }
+          });
+        }
       });
     }
     names = tempList;
@@ -560,7 +562,14 @@ class _HomePageState extends State<HomePage> {
         .setInFocusDisplayType(OSNotificationDisplayType.notification);
     OneSignal.shared.setNotificationOpenedHandler((openedResult) {
       var data = openedResult.notification.payload.additionalData;
-
+      OneSignal.shared
+          .setNotificationReceivedHandler((OSNotification notification) {
+        //This will be called whenever a notification is received
+      });
+      OneSignal.shared
+          .setNotificationOpenedHandler((OSNotificationOpenedResult result) {
+        // This will be called whenever a notification is opened.
+      });
       print('[notification_service - _handleNotificationOpened()');
       print(
           "Opened notification: ${openedResult.notification.jsonRepresentation().replaceAll("\\n", "\n")}");

@@ -92,7 +92,7 @@ class _PostDetailsState extends State<PostDetails> {
           return <Widget>[
             SliverAppBar(
               iconTheme: IconThemeData(color: Colors.white),
-              floating: true,
+              // floating: true,
               expandedHeight: 150.0,
               flexibleSpace: FlexibleSpaceBar(
                 background: Stack(
@@ -124,23 +124,30 @@ class _PostDetailsState extends State<PostDetails> {
                     Positioned(
                       top: 45,
                       right: 10,
-                      child: CircularCountDownTimer(
-                        width: 50,
-                        height: 50,
-                        duration: 45,
-                        fillColor: Colors.black54,
-                        color: Colors.white,
-                        controller: _controller,
-                        backgroundColor: Colors.white54,
-                        strokeWidth: 5.0,
-                        strokeCap: StrokeCap.round,
-                        isTimerTextShown: true,
-                        isReverse: false,
-                        onComplete: () {
-                          changeStatus();
-                        },
-                        textStyle:
-                            TextStyle(fontSize: 30.0, color: Colors.black),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage('assets/logo.png'),
+                              fit: BoxFit.contain),
+                        ),
+                        child: CircularCountDownTimer(
+                          width: 50,
+                          height: 50,
+                          duration: 45,
+                          fillColor: Colors.black54,
+                          color: Colors.white,
+                          controller: _controller,
+                          backgroundColor: Colors.white54,
+                          strokeWidth: 5.0,
+                          strokeCap: StrokeCap.round,
+                          isTimerTextShown: true,
+                          isReverse: false,
+                          onComplete: () {
+                            changeStatus();
+                          },
+                          textStyle:
+                              TextStyle(fontSize: 30.0, color: Colors.black),
+                        ),
                       ),
                     ),
                     Positioned(
@@ -181,149 +188,147 @@ class _PostDetailsState extends State<PostDetails> {
             )
           ];
         },
-        body: Scaffold(
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                AdmobBanner(
-                    adUnitId: AdMobServices.bannerId,
-                    adSize: AdmobBannerSize.BANNER),
-                AdmobBanner(
-                    adUnitId: AdMobServices.bannerId,
-                    adSize: AdmobBannerSize.LARGE_BANNER),
-                Html(
-                  data: widget.post.content,
-                  onLinkTap: (url) async {
-                    if (await canLaunch(url)) {
-                      await launch(url);
-                    } else {
-                      throw 'Could not launch $url';
-                    }
-                  },
-                  padding: EdgeInsets.all(8.0),
-                  linkStyle: const TextStyle(
-                    color: Colors.blueAccent,
-                    decorationColor: Colors.blueAccent,
-                    decoration: TextDecoration.underline,
-                  ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              AdmobBanner(
+                  adUnitId: AdMobServices.bannerId,
+                  adSize: AdmobBannerSize.BANNER),
+              AdmobBanner(
+                  adUnitId: AdMobServices.bannerId,
+                  adSize: AdmobBannerSize.LARGE_BANNER),
+              Html(
+                data: widget.post.content,
+                onLinkTap: (url) async {
+                  if (await canLaunch(url)) {
+                    await launch(url);
+                  } else {
+                    throw 'Could not launch $url';
+                  }
+                },
+                padding: EdgeInsets.all(8.0),
+                linkStyle: const TextStyle(
+                  color: Colors.blueAccent,
+                  decorationColor: Colors.blueAccent,
+                  decoration: TextDecoration.underline,
                 ),
-                AdmobBanner(
-                    adUnitId: AdMobServices.bannerId,
-                    adSize: AdmobBannerSize.LARGE_BANNER),
-                SizedBox(
-                  height: 20,
-                ),
-                Consumer<UserProvider>(
-                  builder: (context, userData, child) {
-                    return FlatButton(
-                      shape: RoundedRectangleBorder(
-                          side: BorderSide(
-                              color: Colors.grey[600],
-                              width: 3,
-                              style: BorderStyle.solid),
-                          borderRadius: BorderRadius.circular(10)),
-                      color: change && !_clicked
-                          ? Color(0xFF008B8B)
-                          : Colors.grey[600],
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Collect',
-                            style: TextStyle(
-                                shadows: [
-                                  BoxShadow(
-                                    color: Colors.black,
-                                    offset: Offset(0, 5),
-                                    blurRadius: 10.0,
-                                  )
-                                ],
-                                // color: Colors.grey[400],
-                                fontWeight: FontWeight.bold,
-                                fontSize: 22.0),
-                          ),
-                          Container(
-                            height: 60,
-                            width: 300,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '+10 ',
-                                  style: TextStyle(
-                                      shadows: [
-                                        BoxShadow(
-                                          color: Colors.black,
-                                          offset: Offset(0, 5),
-                                          blurRadius: 10.0,
-                                        )
-                                      ],
-                                      // color: Colors.grey[400],
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 22.0),
-                                ),
-                                Container(
-                                  height: 60,
-                                  width: 60,
-                                  child: Shimmer.fromColors(
-                                    baseColor: logoGreen,
-                                    highlightColor: Colors.grey[300],
-                                    direction: ShimmerDirection.ltr,
-                                    child: Image.asset(
-                                      'assets/logoTransparent.png',
-                                    ),
-                                  ),
-                                ),
-                                Text(
-                                  ' points',
-                                  style: TextStyle(
-                                      shadows: [
-                                        BoxShadow(
-                                          color: Colors.black,
-                                          offset: Offset(0, 5),
-                                          blurRadius: 10.0,
-                                        )
-                                      ],
-                                      // color: Colors.grey[400],
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 22.0),
+              ),
+              AdmobBanner(
+                  adUnitId: AdMobServices.bannerId,
+                  adSize: AdmobBannerSize.LARGE_BANNER),
+              SizedBox(
+                height: 20,
+              ),
+              Consumer<UserProvider>(
+                builder: (context, userData, child) {
+                  return FlatButton(
+                    shape: RoundedRectangleBorder(
+                        side: BorderSide(
+                            color: Colors.grey[600],
+                            width: 3,
+                            style: BorderStyle.solid),
+                        borderRadius: BorderRadius.circular(10)),
+                    color: change && !_clicked
+                        ? Color(0xFF008B8B)
+                        : Colors.grey[600],
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Collect',
+                          style: TextStyle(
+                              shadows: [
+                                BoxShadow(
+                                  color: Colors.black,
+                                  offset: Offset(0, 5),
+                                  blurRadius: 10.0,
                                 )
                               ],
-                            ),
-                          )
-                        ],
-                      ),
-                      onPressed: change && !_clicked
-                          ? () {
-                              if (mounted) {
-                                setState(() {
-                                  _clicked = true;
-                                });
-                              }
-                              print('redeem');
-                              print("here redeem");
-                              Fluttertoast.showToast(
-                                msg: "+10 points",
-                                toastLength: Toast.LENGTH_LONG,
-                                gravity: ToastGravity.CENTER,
-                              );
-                              UserProvider _userProvider =
-                                  Provider.of<UserProvider>(context,
-                                      listen: false);
-                              _userProvider.updatePoint(10);
+                              // color: Colors.grey[400],
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22.0),
+                        ),
+                        Container(
+                          height: 60,
+                          width: 300,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '+10 ',
+                                style: TextStyle(
+                                    shadows: [
+                                      BoxShadow(
+                                        color: Colors.black,
+                                        offset: Offset(0, 5),
+                                        blurRadius: 10.0,
+                                      )
+                                    ],
+                                    // color: Colors.grey[400],
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 22.0),
+                              ),
+                              Container(
+                                height: 60,
+                                width: 60,
+                                child: Shimmer.fromColors(
+                                  baseColor: logoGreen,
+                                  highlightColor: Colors.grey[300],
+                                  direction: ShimmerDirection.ltr,
+                                  child: Image.asset(
+                                    'assets/logoTransparent.png',
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                ' points',
+                                style: TextStyle(
+                                    shadows: [
+                                      BoxShadow(
+                                        color: Colors.black,
+                                        offset: Offset(0, 5),
+                                        blurRadius: 10.0,
+                                      )
+                                    ],
+                                    // color: Colors.grey[400],
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 22.0),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                    onPressed: change && !_clicked
+                        ? () {
+                            if (mounted) {
+                              setState(() {
+                                _clicked = true;
+                              });
                             }
-                          : () {},
-                    );
-                  },
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                // AdmobBanner(
-                //     adUnitId: AdMobServices.bannerId,
-                //     adSize: AdmobBannerSize.BANNER),
-              ],
-            ),
+                            print('redeem');
+                            print("here redeem");
+                            Fluttertoast.showToast(
+                              msg: "+10 points",
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.CENTER,
+                            );
+                            UserProvider _userProvider =
+                                Provider.of<UserProvider>(context,
+                                    listen: false);
+                            _userProvider.updatePoint(10);
+                          }
+                        : () {},
+                  );
+                },
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              // AdmobBanner(
+              //     adUnitId: AdMobServices.bannerId,
+              //     adSize: AdmobBannerSize.BANNER),
+            ],
           ),
         ),
       ),
