@@ -562,19 +562,32 @@ class _HomePageState extends State<HomePage> {
         .setInFocusDisplayType(OSNotificationDisplayType.notification);
     OneSignal.shared.setNotificationOpenedHandler((openedResult) {
       var data = openedResult.notification.payload.additionalData;
-      OneSignal.shared
-          .setNotificationReceivedHandler((OSNotification notification) {
-        //This will be called whenever a notification is received
+      OneSignal.shared.setNotificationOpenedHandler(
+          (OSNotificationOpenedResult action) async {
+        Map<String, dynamic> dataNotification =
+            action.notification.payload.additionalData;
+        print(dataNotification);
+        if (dataNotification.containsValue('detailPage')) {
+          await Navigator.push(
+              context,
+              new MaterialPageRoute(
+                builder: (context) => new HomePage(),
+              ));
+        }
+        // OneSignal.shared
+        //     .setNotificationReceivedHandler((OSNotification notification) {
+        //   //This will be called whenever a notification is received
+        // });
+        // OneSignal.shared
+        //     .setNotificationOpenedHandler((OSNotificationOpenedResult result) {
+        //   Navigator.push(
+        //       context, MaterialPageRoute(builder: (context) => HomePage()));
+        //   // This will be called whenever a notification is opened.
+        // });
+        print('[notification_service - _handleNotificationOpened()');
+        print(
+            "Opened notification: ${openedResult.notification.jsonRepresentation().replaceAll("\\n", "\n")}");
       });
-      OneSignal.shared
-          .setNotificationOpenedHandler((OSNotificationOpenedResult result) {
-        // This will be called whenever a notification is opened.
-      });
-      print('[notification_service - _handleNotificationOpened()');
-      print(
-          "Opened notification: ${openedResult.notification.jsonRepresentation().replaceAll("\\n", "\n")}");
-      global.appNavigator.currentState
-          .push(MaterialPageRoute(builder: (context) => HomePage()));
     });
   }
 }
