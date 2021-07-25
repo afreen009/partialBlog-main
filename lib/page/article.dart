@@ -161,7 +161,7 @@ class _ArticlesState extends State<Articles>
       child: Column(
         children: <Widget>[
           SizedBox(
-            height: 15,
+            height: 8,
           ),
           Row(
             children: [
@@ -196,7 +196,7 @@ class _ArticlesState extends State<Articles>
     return Column(
       children: [
         SizedBox(
-          height: 20,
+          height: 8,
         ),
         Row(
           children: [
@@ -256,7 +256,7 @@ class _ArticlesState extends State<Articles>
             // ),
           ],
         ),
-        SizedBox(height: 19),
+        SizedBox(height: 15),
         Container(
           height: 140.0,
           // color: Colors.blueGrey[100],

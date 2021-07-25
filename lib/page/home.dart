@@ -8,6 +8,7 @@ import 'package:google_signin_example/network/wp_api.dart';
 import 'package:google_signin_example/page/article.dart';
 import 'package:google_signin_example/page/edit_profile.dart';
 import 'package:google_signin_example/page/post_details.dart';
+import 'package:google_signin_example/page/second.dart';
 import 'package:google_signin_example/page/view_all.dart';
 import 'package:google_signin_example/providers/user_provder.dart';
 import 'package:google_signin_example/services/appbar.dart';
@@ -17,7 +18,7 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
-
+import '../globals.dart' as globals;
 import '../database.dart';
 
 const String testDevice = '';
@@ -47,7 +48,7 @@ class _HomePageState extends State<HomePage> {
   TextEditingController _filter;
   AppBarSearch appbar;
   // BannerAd _bannerAd;
-
+  String _debugLabelString = "";
   // Icon _searchIcon =  Icon(Icons.search);
   FirebaseAuth auth = FirebaseAuth.instance;
   int currentIndex;
@@ -556,38 +557,68 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void initPlatformState() {
-    OneSignal.shared.init(oneSignalAppId);
+  Future initPlatformState() async {
+    OneSignal.shared.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
+    OneSignal.shared.setRequiresUserPrivacyConsent(true);
+    OneSignal.shared.init(
+      oneSignalAppId,
+      iOSSettings: {
+        OSiOSSettings.autoPrompt: false,
+        OSiOSSettings.inAppLaunchUrl: false
+      },
+    );
     OneSignal.shared
-        .setInFocusDisplayType(OSNotificationDisplayType.notification);
-    OneSignal.shared.setNotificationOpenedHandler((openedResult) {
-      var data = openedResult.notification.payload.additionalData;
-      OneSignal.shared.setNotificationOpenedHandler(
-          (OSNotificationOpenedResult action) async {
-        Map<String, dynamic> dataNotification =
-            action.notification.payload.additionalData;
-        print(dataNotification);
-        if (dataNotification.containsValue('detailPage')) {
-          await Navigator.push(
-              context,
-              new MaterialPageRoute(
-                builder: (context) => new HomePage(),
-              ));
-        }
-        // OneSignal.shared
-        //     .setNotificationReceivedHandler((OSNotification notification) {
-        //   //This will be called whenever a notification is received
-        // });
-        // OneSignal.shared
-        //     .setNotificationOpenedHandler((OSNotificationOpenedResult result) {
-        //   Navigator.push(
-        //       context, MaterialPageRoute(builder: (context) => HomePage()));
-        //   // This will be called whenever a notification is opened.
-        // });
-        print('[notification_service - _handleNotificationOpened()');
-        print(
-            "Opened notification: ${openedResult.notification.jsonRepresentation().replaceAll("\\n", "\n")}");
+        .setInAppMessageClickedHandler((OSInAppMessageAction action) {
+      this.setState(() {
+        _debugLabelString =
+            "In App Message Clicked: \n${action.jsonRepresentation().replaceAll("\\n", "\n")}";
       });
     });
+    OneSignal.shared
+        .setInFocusDisplayType(OSNotificationDisplayType.notification);
+    OneSignal.shared.setNotificationOpenedHandler(
+      (OSNotificationOpenedResult result) async {
+        print("printed");
+        // var data = result.notification.payload.additionalData;
+        // print("printed$data");
+        globals.appNavigator.currentState.push(
+          MaterialPageRoute(
+            builder: (context) => SecondPage(),
+          ),
+        );
+      },
+    );
+    // OneSignal.shared.setNotificationOpenedHandler(
+    //     (OSNotificationOpenedResult action) async {
+    //   Map<String, dynamic> dataNotification =
+    //       action.notification.payload.additionalData;
+    //   print('inside');
+    //   print("inside$dataNotification");
+    //   await Navigator.push(
+    //       context,
+    //       new MaterialPageRoute(
+    //         builder: (context) => new HomePage(),
+    //       ));
+    //   // if (dataNotification.containsValue('detailPage')) {
+
+    //   // }
+    //   // OneSignal.shared
+    //   //     .setNotificationReceivedHandler((OSNotification notification) {
+    //   //   //This will be called whenever a notification is received
+    //   // });
+    //   // OneSignal.shared
+    //   //     .setNotificationOpenedHandler((OSNotificationOpenedResult result) {
+    //   //   Navigator.push(
+    //   //       context, MaterialPageRoute(builder: (context) => HomePage()));
+    //   //   // This will be called whenever a notification is opened.
+    //   // });
+    //   print('[notification_service - _handleNotificationOpened()');
+    //   // print(
+    //   //     "Opened notification: ${openedResult.notification.jsonRepresentation().replaceAll("\\n", "\n")}");
+    // });
+    // OneSignal.shared.setNotificationOpenedHandler((openedResult) {
+    //   var data = openedResult.notification.payload.additionalData;
+
+    // });
   }
 }

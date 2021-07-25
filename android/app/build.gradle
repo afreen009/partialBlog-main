@@ -62,6 +62,10 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
+        manifestPlaceholders = [
+            onesignal_app_id: 'fa29c813-75c7-4503-85e8-37ae3e3d807e',
+            onesignal_google_project_number: 'REMOTE'
+        ]
     }
        signingConfigs {
        release {
